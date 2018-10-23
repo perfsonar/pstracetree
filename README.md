@@ -1,7 +1,7 @@
 # pstracetree
 
-Present traceroutes from the Perfsonar Measurement Archive(Esmond)
-Makes a summary of routes  in a node graph and stats in a table
+* Present traceroutes from the Perfsonar Measurement Archive(Esmond)
+* Makes a summary of routes  in a node graph and stats in a table
 
 Usage :
 * tracetree.html?base=\<MA base-uri\>
