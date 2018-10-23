@@ -2,14 +2,25 @@
 </head><body>
 <!--
 <iframe width="100%" height=100% 
-src="http://iou2.uninett.no/js/pstracetree.html?base=http://microdep-ps.labs.uninett.no/esmond/perfsonar/archive/20f2cf3724db4b
-05ac1231307cd4e05d/packet-trace/base&time-range=86400">
+src="pstracetree.html?base=http://microdep-ps.labs.uninett.no/esmond/perfsonar/archive/20f2cf3724db4b05ac1231307cd4e05d/packet-trace/base&time-range=86400">
 </iframe>
 -->
+<h2>examples</h2>
 <ul><li>
-<a href="http://iou2.uninett.no/js/pstracetree.html?base=http://microdep-ps.labs.uninett.no/esmond/perfsonar/archive/20f2cf3724db4b
-05ac1231307cd4e05d/packet-trace/base&time-range=86400">trondheim-saopaulo</a>
-<li><a href="http://iou2.uninett.no/js/pstracetree.html?base=http://ps-sn-central.qalab.geant.net/esmond/perfsonar/archive/48c69958e30b444b889ea0ca4e45f8d9/packet-trace/base&time-range=86400&from=anywhere&to=elsewhere" >lisboa-switzerland</a>
+<a href="pstracetree.html?base=http://microdep-ps.labs.uninett.no/esmond/perfsonar/archive/20f2cf3724db4b05ac1231307cd4e05d/packet-trace/base&time-range=86400">trondheim-saopaulo</a>
+<br>MA is unstable but the graph is interesting.
+<li><a href="pstracetree.html?base=http://ps-sn-central.qalab.geant.net/esmond/perfsonar/archive/48c69958e30b444b889ea0ca4e45f8d9/packet-trace/base&time-range=86400&from=lisboa&to=switzerland" >lisboa-switzerland</a>
 </ul>
 
+<h2>Howto craft a uri</h2>
+<pre>
+List the MA :
+   curl http://perfsonar-smallnodes.geant.org/esmond/perfsonar/archive/
+
+Find a measurement of interest and select a base-uri for event-type packet-trace
+
+            "base-uri" : "/esmond/perfsonar/archive/003972f9432a4a4a827ef83778600541/packet-trace/base",
+            "event-type" : "packet-trace"
+
+use in uri above
 </body></html>
