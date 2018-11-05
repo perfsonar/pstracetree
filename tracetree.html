@@ -101,14 +101,19 @@ table.sortable thead {
     <button onclick="navigate('next')">Next</button>
     <button onclick="navigate('up')">Up</button>
     -->
-<button id="simple" onclick="plot_tree_json(collapse_nodes(tr_data));"
+<button id="simple" onclick="plot_tree_json(collapse_nodes(tr_data), 'treetainer', false);"
 	title='Collapse nodes within ip/24' >Simple</button>
-<button id="full" onclick="plot_tree_json(in_slice.tree);"
+<button id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
 	title='Expand collapsed nodes'>Full</button>
 <button id="stopp" onclick="tree.stopSimulation();"
 	title='Stop automatic layout processing'>Stop</button>
 <button id="start" onclick="tree.startSimulation();"
 	title='Start automatic layout processing'>Start</button>
+<button id="copytree" onclick="copy_div('treetainer');"
+title='Copy current topology to new tab'>Copy topology</button>
+
+ <button style="float:right">Version 0.2</button>
+
 
 <!--    <button id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
     <button id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
@@ -138,11 +143,11 @@ table.sortable thead {
 
       <div id=legend style=float:right> </div>
 	 
-      <div align=left class=popup id="treetainer" style="float:left; height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
+      <div class=popup id="treetainer" style="height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
          <img style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
          <h1 align=middle>Processing automatic topology layout</h1>
       </div>
-    </div>
+  </div>
  
  
    <!--
@@ -155,24 +160,24 @@ table.sortable thead {
     </div>
 
     <div id=dok>
-    <h2>Traceroute reports</h2>
+      <h2>Traceroute reports</h2>
     The traceroutes are collected using normal traceroute that probes hops in sequence and
 varies port numbers and by hit different flows each time and causes the various load sharing paths in the network to be seen.
     That means it does not report a particular route, just samples of nodes available on the various paths to the destination.
-    <h3>Topology</h3>To construct a likely network topology we have connected nodes that apear in adjacent rows in a particular traceroute report, and then aggregating all single reports to an overall multipath-graph. One series of traceroutes is more likely to represent the state of the routing table at the time of execution, but routing can change any time so a true picture of the topology can not be constructed, and edges in the graph might not represent an actual network connection.
-    <p>Dashed lines means there are non-responding routers between nodes. Color scale is log(e) responses. Hover nodes to see links and corresponding table entry. Select node to scroll to table entry. Drag nodes to fix. <font color=red>Red</font> nodes marks it as the end of  traceroute - i.e. no further route.
-    <h3>Hops</h3>
+      <h3>Topology</h3>To construct a likely network topology we have connected nodes that apear in adjacent rows in a particular traceroute report, and then aggregating all single reports to an overall multipath-graph. One series of traceroutes is more likely to represent the state of the routing table at the time of execution, but routing can change any time so a true picture of the topology can not be constructed, and edges in the graph might not represent an actual network connection.
+      <p>Dashed lines means there are non-responding routers between nodes. Color scale is log(e) responses. Hover nodes to see links and corresponding table entry. Select node to scroll to table entry. Drag nodes to fix. <font color=red>Red</font> nodes marks it as the end of  traceroute - i.e. no further route.
+	<h3>Hops</h3>
     This graph shows how often a hop occur on the Y-axis and the hop number on the X-axis and the size of the blob show the return delay to this hop. Click nodes to see details about delay and loss. Routers may delay responding to traceroutes if they are busy with forwarding packets, so the delay might not be a good indicator for normal packet delays.
-    <h3>Navigation</h3>
+	<h3>Navigation</h3>
     The navigation is for finding the time window to make traceroute reports for.
     To the left you see the time for the currently shown time slice.
     With the right part you can use a slider to choose a sub-interval and buttons to zoom in and out
 og the enclosing interval.
-    <dl>
-    <dt>Previous<dd>movees the time window on step back in time
-    <dt>Next<dd>moves the time window on step forward in time
-    </dl>
-    
+	<dl>
+	  <dt>Previous<dd>moves the time window on step back in time</dt>
+	  <dt>Next<dd>moves the time window on step forward in time</dt>
+	</dl>
+	
     </div>
 </div>
 
@@ -181,17 +186,18 @@ og the enclosing interval.
     <table border=1>
     <tr align=center>
 
-
     <td><button id=slice onclick="go_to_slice(in_slice, 'same', -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>
-    <td> <span id=timestart title="Currently shown time start">time span
+    <td style="width:22ch"> <span id=timestart title="Currently shown time start">time span
 	    </span></td>
-    <td> <span id=timespan title="Currently shown time period">time span
+    <td style="width:8ch"> <span id=timespan title="Currently shown time period">time span
 	    </span></td>
     <td><button id=slice onclick="go_to_slice(in_slice, 'same', 1)"
                   title="Next time slice">Next &rtrif;</button></td>
-    <td> 
-        <td><button id=slice onclick="zoom_to_slice(in_slice.mother, 'out')"
+    <th>Zoom:
+
+
+    <td><button id=slice onclick="zoom_to_slice(in_slice.mother, 'out')"
 		  title="Zoom out to longer time interval">Out &utrif;</button></td>
 
     <td><div class="slidecontainer">
@@ -206,13 +212,13 @@ og the enclosing interval.
 		oninput="update_timeslotOut()" 
 	-->
       
-       <span name="timeslotName" id="timeslotOut"></span>
+      <span name="timeslotName" id="timeslotOut"></span>
     </div></td>
     
     <td><span id="current_span" title="current time interval"></span></td>
     <td><button id=slice onclick="zoom_to_slice(in_slice, 'in')"
 		  title="Zoom in to current time slice">In &dtrif;</button></td>
-    </table>
+     </table>
 </div>
 
 <DIV id='PopUp' style='display: none; position: absolute; left: 100px; top: 50px; border: solid black 1px; padding: 10px; background-color: rgb(200,100,100); text-align: justify; font-size: 12px; width: 135px;' onmouseover="document.getElementById('PopUp').style.display = 'none' ">
@@ -223,8 +229,9 @@ og the enclosing interval.
 
 <div id="error"></div>
 
-    <script>
+<script>
 var tree;    // generated traceroute topology
+var positions=[]; // last position of nodes
 var tr_data; // the ingested json stats
 var urlParams={};
 
@@ -232,6 +239,8 @@ var mother={range:86400};  // the mother slice of traceroutes in ms
 var current_slice=mother;  // the current top level slice
 var in_slice=mother;   // the current zoomed in graph
 var slices=[]; // slices
+var update_time;  // last time graph was updated in ms
+var update_interval=1000;  // update graph every .. ms
 slices.push(mother);
 
 var msts=1;  // convert s to ms
@@ -314,8 +323,8 @@ function tr_slice( start, range){
     var endms=startms+range;
 
     for ( slice of slices ){
-	if ( slice.tr_data && slice.start < start
-	     && (slice.start+start.range) < endms){
+	if ( slice.tr_data && slice.start <= start
+	     && (slice.start+slice.range) >= endms){
 	    for ( tr of slice.tr_data ){
 		if ( tr.ts >= startms && tr.ts <= endms ){
 		    extract.push(tr);
@@ -359,7 +368,7 @@ function tr_slice_make( slice, slice_no, level){
     }
     
     //var start = slice.start + ( slice_no - slice.slice_no ) * new_range;
-        var now=new Date().getTime() / 1000;
+    var now=new Date().getTime() / 1000;
     if ( ( ca_start + new_range ) > now )  // adjust to end
 	ca_start = now - new_range;
     var start= Math.floor(ca_start / new_range) * new_range; // round off to nearest unit
@@ -386,7 +395,7 @@ function tr_slice_make( slice, slice_no, level){
     }
  
     n_slice.slice_count = compute_slice_count( n_slice.range );
-    if ( !sub_slice ){
+    if ( n_slice.mother === undefined ){ // next on the mother level
 	current_slice=n_slice;
     }
 
@@ -394,7 +403,7 @@ function tr_slice_make( slice, slice_no, level){
     if ( extract.length > 0 ){
 	n_slice.tr_data=extract;
 	n_slice.slice_no = slice_no;
-	n_slice.slice_count=slice_count;
+	// n_slice.slice_count=slice_count;
 	
 	tr_slice_show( n_slice);
     } else { // fetch new data - new motherslice or slice outside data
@@ -412,17 +421,18 @@ function tr_slice_show(slice){
 	var tree;
 	if ( ! slice.tree)
 	    slice.tree=traceroute_sum(slice.tr_data);
-	plot_tree_json(slice.tree);
+	plot_tree_json(slice.tree, 'treetainer', false);
 	report_stats( slice.tree);
 	plot_stats_hops(slice.tree);
 	in_slice=slice;
 	show_time_slice(slice);
+	update_time = new Date().getTime();
 
 	var limits=create_limits(slice.tree.nodes, node_colors);
 	taint_nodes( slice.tree.nodes, node_colors, limits)
 	create_legend('legend', node_colors, limits);
     } else {
-	alert("empty slice for slice " + slice.slice_no );
+	alert("empty slice for slice " + slice.slice_no + ' starting ' + slice.start);
     }
 }
 
@@ -430,14 +440,16 @@ function tr_slice_show(slice){
 
 function zoom_to_slice(slice, level){
     if (slice){
-	in_slice=current_slice=slice;
+      in_slice=slice;
+      current_slice=slice;
 	// $("#timeslot").val(0);
-	tr_slice_show( slice)
+	tr_slice_show( slice);
 	show_time_slice(slice);
     } else { 
 	tr_slice_make(current_slice, 0, level );
 	// tr_slice_make(current_slice, $("#timeslot").val() * current_slice.slice_count / slide_max, false );
-    }
+      }
+      var stop=1;
 }
 
 
@@ -446,7 +458,7 @@ function zoom_to_slice(slice, level){
 function go_to_slice( slice, level, delta){
     if ( slice ){
 	var mom=slice; // in case this is first zoom
-	if ('mother' in slice ){
+	if ( slice.mother !== undefined ){
 	    mom=slice.mother;
 	} 
 
@@ -509,6 +521,7 @@ function traceroute_sum(tr_data){
     var stats_ix=[];
     var routers=[];  // previous hop routers
     var prouters=[];  // previous hop routers
+    var loss=[];
     routers['start']=1;
     var start, range;
 
@@ -536,7 +549,7 @@ function traceroute_sum(tr_data){
 	    var id=hop.ttl + '*';
 	    if (hop.ip) {
 		id=hop.ip;
-	    }
+	    } 
 	    var label=id;
 	    if ( hop.hostname){
 		label=hop.hostname;
@@ -565,7 +578,9 @@ function traceroute_sum(tr_data){
 		nodes[node_ix[id]].color=node.color;
 	    }
 	    if ( hop.ip){
-		update_stats( hop, tr.ts, stats, stats_ix);
+		update_stats( id, hop, tr.ts, stats, stats_ix);
+	    } else {
+		loss[hop.ttl] = ++ loss[hop.ttl] || 1 ;
 	    }
 	    pttl=hop.ttl;
 	}
@@ -584,7 +599,7 @@ function traceroute_sum(tr_data){
 	stat.sdv=stat.rtt.sdv();
     }
     
-    return { "nodes": nodes, "edges": edgelist, "stats": stats, "start":start, "range":range }
+    return { "nodes": nodes, "edges": edgelist, "stats": stats, "start":start, "range":range , "loss":loss}
 }
 
 // build edges
@@ -605,8 +620,8 @@ function tr_edges( prouters, to, edges ){
 }
 
 // update stats
-function update_stats(hop, ts, stats, stats_ix){
-    var hopid=hop.ttl + '-' + hop.ip;
+function update_stats(hopid, hop, ts, stats, stats_ix){
+    //var hopid=hop.ttl + '-' + hop.ip;
     var ix;
     if ( hopid in stats_ix){
 	ix=stats_ix[hopid];
@@ -777,7 +792,9 @@ function update_slice(){
     var meter=document.getElementById('timeslot').value;
     var slice_no=Math.floor(meter * current_slice.slice_count / slide_max);
     var delta= slice_no - in_slice.slice_no;
-    if ( delta !== 0 ){
+    var now = new Date().getTime();
+    
+    if ( delta !== 0 && (now - update_time) > update_interval){
 	go_to_slice( current_slice, 'in', delta );
     }
 }
@@ -785,8 +802,8 @@ function update_slice(){
 function update_timeslotOut(){
     var timeslot=document.getElementById('timeslot').value;
     document.getElementById('timeslotOut').innerHTML=
-		Math.floor(timeslot * current_slice.slice_count / slide_max)
-	+ '/' + (current_slice.slice_count);
+		( ' ' + ( Math.floor(timeslot * current_slice.slice_count / slide_max) + 0) ).slice(-2)
+	+ '/' + (' ' + current_slice.slice_count).slice(-2);
 }
 
 function show_time_slice(slice){
@@ -848,7 +865,7 @@ function show_time_span(tr_data){
 }
 
 
-function plot_tree_json(data){
+function plot_tree_json(data, divid, copy){
     var nodes=[];
     var edges=[];
     var node,from, to, color;
@@ -868,7 +885,7 @@ function plot_tree_json(data){
 	interaction: { hover:true, hoverConnectedEdges: true, multiselect: false, navigationButtons: true }
     };
 
-    var container = document.getElementById('treetainer');
+    var container = document.getElementById(divid);
 
     if( data.nodes.length < 1 ){
 	container.innerHTML='<h2>Empty data set - missing data ?</h2>';
@@ -880,7 +897,9 @@ function plot_tree_json(data){
     edges=new vis.DataSet(data.edges);
     topology={nodes:nodes, edges:edges};
 
-    if ( tree ) {
+    if (copy){
+	new vis.Network( container, topology, opts );
+    } else if ( tree ) {
 	// tree.destroy();
 	update_tree_json(tree, topology);
     } else {
@@ -944,6 +963,13 @@ function plot_tree_json(data){
     
 }
 
+function update_positions(network){
+    var pos = network.getPositions();
+    for ( let p of pos ){
+	positions[p.id]=p;	    
+    }
+	
+}
 
 function update_tree_json(network, data){
     var g_nodes=network.body.data.nodes._data,
@@ -1185,7 +1211,15 @@ function report_stats(data){
 	
     html+='<table id="stats_table" class=sortable><thead><th>Hop<th>Router<th>Avg ms<th>Min<th>Max<th>Sdv<th>Loss%<th>Seen<th>Address<th>Start<th>End<th>Error</thead><tbody>';
     var phop;
-    $.each(data.stats, function( index, point){
+    var sorted=data.stats.slice(); // copy array so not to destroy sequence
+    sorted.sort( function( a, b){
+	if ( a.hop === b.hop)
+	    return b.seen - a.seen;
+	else
+	    return a.hop - b.hop;
+    });
+    
+    $.each( sorted, function( index, point){
 	var hops=point.hop;
 	if ( phop == point.hop){ // space when same as previous
 	    hops='';
@@ -1196,9 +1230,16 @@ function report_stats(data){
 	    '<td align=right>' + point.avg.toFixed(1) + '</td>' +
 	    '<td align=right>' + point.min.toFixed(1) + '</td>' +
 	    '<td align=right>' + point.max.toFixed(1) + '</td>' +
-	    '<td align=right>' + point.sdv.toFixed(1) + '</td>' +
-	    '<td align=right>' + point.loss.toFixed(2) + '%</td>' +
-	    '<td align=right>' + point.seen + '</td>' +
+	    '<td align=right>' + point.sdv.toFixed(1) + '</td>';
+	html += '<td align=right>';
+	if ( point.hop !== phop ){
+	    if ( data.loss[point.hop] )
+		html+=data.loss[point.hop];
+	    else
+		html+='0';
+	}
+	// '<td align=right>' + point.loss.toFixed(2) + '%</td>' +
+	html += '<td align=right>' + point.seen + '</td>' +
 	    '<td>' + point.address + '</td>' +
 	    '<td>' + point.first_seen + '</td>' +
 	    '<td>' + point.last_seen + '</td>' +
@@ -1452,6 +1493,37 @@ function navigate(direction){
     
 }
 
+var copy_no=0; // counting copy tabs
+// copy div to a new tab name with current timestamp
+function copy_div(div){
+    var from=document.getElementById(div);
+    var timetext=document.getElementById('timestart').innerHTML;
+    var timespan='copy' + (copy_no++);
+
+    var li='<li><a href="#' + timespan + '">' + timetext + '</a></li>';
+    $(li).appendTo("#tabs .ui-tabs-nav");
+    $( '<div id="' + timespan + '"></div>').appendTo( tabs );
+    $("#tabs").tabs("refresh");
+
+    //var copy = document.createElement("div");
+    // var copy=$("#" + $.escapeSelector(timespan) );
+    var copy=document.getElementById(timespan);
+    copy.style.width = from.style.width;
+    copy.style.height = from.style.height;
+    copy.innerHTML = from.innerHTML;
+    // copy.setAttribute("id", timespan );
+
+    //document.getElementById("tabs").appendChild(copy);
+    plot_tree_json(current_slice.tree, timespan, true);
+
+}
+
+function copy_tree(slice){
+    var timespan=document.getElementById('timestart').innerHTML;
+ 
+    
+}
+
 /* statistical functions */
 
 function Stats(){
@@ -1546,8 +1618,8 @@ $(document).ready( function(){
 	mother.slice_no=0;
 	current_slice=mother;
 
-	$("#timeslot").mouseup( function(){
-	    go_to_slice(current);
+	$("#timeslotxxx").mouseup( function(){
+	    update_slice();
 	});
     
 	$("#timeslot").mouseup( function(){
