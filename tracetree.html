@@ -101,7 +101,7 @@ table.sortable thead {
     <button onclick="navigate('next')">Next</button>
     <button onclick="navigate('up')">Up</button>
     -->
-<button id="simple" onclick="plot_tree_json(collapse_nodes(tr_data), 'treetainer', false);"
+<button id="simple" onclick="plot_tree_json(collapse_nodes(in_slice.tree), 'treetainer', false);"
 	title='Collapse nodes within ip/24' >Simple</button>
 <button id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
 	title='Expand collapsed nodes'>Full</button>
@@ -1128,7 +1128,7 @@ function collapse_nodes(data){
     }
 
     // document collapses for popup
-    for ( let stats of tr_data.stats){
+    for ( let stats of data.stats){
 	stats.collapses='';
 	if ( collapsed[stats.address] > 0 ){
 	    for ( let s2 of tr_data.stats){
