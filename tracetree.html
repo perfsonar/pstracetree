@@ -93,7 +93,7 @@ table.sortable thead {
 }
 </style>
 
-
+</head>
 
 <body>
     <h2>Traceroute charts <span id=tracepath></span></h2>
@@ -708,6 +708,8 @@ function fetch_and_plot_json(slice, base) {
     //document.getElementById("summary_button").onclick= function(){
     //	document.location.href="/" + to + "/sum/gap-sum-" + path[4] + ".html";
     //}
+
+    console.log('traceroute path:' + tpath );
     
     var jqxhr = $.getJSON( encodeURI(tpath), function( tr_json){
 	//	  plot_tree_json(reduce_graph(data));
@@ -723,7 +725,6 @@ function fetch_and_plot_json(slice, base) {
 	});
 
 }
-
 
 
 function plot_tree(data){
