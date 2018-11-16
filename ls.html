@@ -3,21 +3,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
-<title>Traceroute chart</title>
+    <title>Traceroute chart</title>
 
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<!-- <script src="/js/sorttable.js"></script> -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="sorttable.js"></script>
 
-<style>
-/* Sortable tables */
+    <style>
+    /* Sortable tables */
 table.sortable thead {
-    background-color:#eee;
-    color:#666666;
-    font-weight: bold;
-    cursor: default;
-}
+   background-color:#eee;
+   color:#666666;
+   font-weight: bold;
+   cursor: default;
+   } 
 </style>
 
 <script>
@@ -45,7 +45,7 @@ function fetch_ma(loc){
     var url= 'cors.php?method=GET&url=' + loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
 
-    var head='<table class=sortable id="ma_table" border=1><thead title="Sortable"><tr><th>Location<th>Country<th>Url1<th>Url2<th>Url3<th>Url4</thead><tbody>';
+    var head='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Location<th>Country<th>Url1<th>Url2<th>Url3<th>Url4</thead><tbody>';
     var tail='</tbody></table>';
 
     // $.getJSON( encodeURI(url), function( mas){
@@ -64,9 +64,12 @@ function fetch_ma(loc){
 		head+=tr;
 	    }
 	} );
-	$("#ma").html( head+tail);
+	$("#ma").html( head+tail)
+	    .ready( function(){
+		sorttable.makeSortable(document.getElementById("ma_table"))
+	    });
 
-	makeSortable(document.getElementById("ma_table"));
+	//makeSortable(document.getElementById("ma_table"));
     } )
     .fail(function( jqxhr, textStatus, error) {
 	msg= "Failed to get "+ url + " error " + textStatus + ", " + error;
@@ -86,13 +89,13 @@ function fetch_base(url){
     if ( url.slice(-1) !== "/" ){
 	url += "/";	
     }
-    $("#peers").html('Fetching peer list: '+ url );
-
     
     //url+='?tool-name="pscheduler/traceroute"';
     url = 'cors.php?method=GET&url=' + url;
-    console.log('Fetching MA ' + url);
-    var head='<table class=sortable id="peer_table" border=0><thead title="Sortable"><tr><th>Peers</thead><tbody>';
+    var msg='Fetching MA ' + url;
+    console.log(msg);
+    $("#peers").html(msg);
+    var head='<table  id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Peers list</thead><tbody>';
     var tail='</tbody></table>';
 
     $.getJSON( url, function( events){
@@ -114,8 +117,11 @@ function fetch_base(url){
 		});
 	    }
 	} );
-	$("#peers").html( head + tail);
-	makeSortable( document.getElementById("peer_table"));
+	$("#peers").html( head + tail)
+	    .ready( function(){
+		sorttable.makeSortable(document.getElementById("peer_table"))
+	    });
+	//makeSortable( document.getElementById("peer_table"));
     } )
 	.fail(function( jqxhr, textStatus, error) {
 	    msg= "Failed to get "+ url + " error " + textStatus + ", " + error;
@@ -166,7 +172,7 @@ $(document).ready( function(){
 
 } );
 
-function sortTable(table, col, reverse) {
+/* function sortTable(table, col, reverse) {
     var tb = table.tBodies[0], // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
         tr = Array.prototype.slice.call(tb.rows, 0), // put rows into array
         i;
@@ -197,6 +203,7 @@ function makeAllSortable(parent) {
     while (--i >= 0) makeSortable(t[i]);
 }
 
+*/
 
 </script>
 
@@ -207,7 +214,7 @@ function makeAllSortable(parent) {
   
     <ul>
       <li><a id=tab-ma href="#ma">Measurement Archives</a>
-      <li><a id=tab-peers href="#peers">peers</a>
+      <li><a id=tab-peers href="#peers">Peers</a>
       <li><a id=tab-trace href="#trace">Traceroute</a>
     </ul>
     <div id=ma><h2 style=text-align:center> Please wait for MA list!</div>
