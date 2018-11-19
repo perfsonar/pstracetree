@@ -44,8 +44,9 @@ function fetch_ls(ls){
 function fetch_ma(loc){
     var url= 'cors.php?method=GET&url=' + loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
-
-    var head='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Location<th>Country<th>Url1<th>Url2<th>Url3<th>Url4</thead><tbody>';
+ 
+    var head='<input type="text" id="ma_in" onkeyup="search_table_ma()" placeholder="Search table..">';
+    head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>Url1<th>Url2<th>Url3<th>Url4</thead><tbody>';
     var tail='</tbody></table>';
 
     // $.getJSON( encodeURI(url), function( mas){
@@ -54,7 +55,7 @@ function fetch_ma(loc){
 	$.each(mas, function(index, ma){
 	    if ( ma["psservice-eventtypes"].indexOf( "packet-trace") >= 0 ){
 		// console.log (ma["location-sitename"] + ' - ' + ma["service-locator"][0]);
-		var tr = '<tr><td>' + ma["location-sitename"] + '<td>' + ma["location-country"];
+		var tr = '<tr><td>'+ ma["service-name"] + '<td>' + ma["location-sitename"] + '<td>' + ma["location-country"];
 		$.each( ma["service-locator"], function( index, base ){
 		    var srv = base.split("/").slice(0,3).join("/");
 	    	    // tr += '<td><a href="ls.html?ma=' + base + '">' + srv  + '</a>' ;
@@ -85,17 +86,19 @@ var urlParams = {};
 
 function fetch_base(url){
     $('#tabs').tabs({'active': 1});
-     var server= url.split("/").slice(0,3).join("/");
+
+    var server= url.split("/").slice(0,3).join("/");
     if ( url.slice(-1) !== "/" ){
 	url += "/";	
     }
     
-    //url+='?tool-name="pscheduler/traceroute"';
+    url+='&tool-name=pscheduler/traceroute';
     url = 'cors.php?method=GET&url=' + url;
     var msg='Fetching MA ' + url;
     console.log(msg);
     $("#peers").html(msg);
-    var head='<table  id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Peers list</thead><tbody>';
+    var head='<input type="text" id="peer_in" onkeyup="search_table_peer()" placeholder="Search table..">';
+    head+='<table  id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Peers list</thead><tbody>';
     var tail='</tbody></table>';
 
     $.getJSON( url, function( events){
@@ -203,7 +206,44 @@ function makeAllSortable(parent) {
     while (--i >= 0) makeSortable(t[i]);
 }
 
-*/
+		      */
+
+function search_table_ma() {
+    search_table('ma_in', 'ma_table');
+}
+function search_table_peer() {
+    search_table('peer_in', 'peer_table');
+}
+
+function search_table(input,table) {
+    // Declare variables
+    var input, filter, table, tr, td, i;
+    input = document.getElementById(input);
+    filter = input.value.toUpperCase();
+    table = document.getElementById(table);
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+	//td = tr[i].getElementsByTagName("td")[0];
+	var hit=false;
+	$.each(tr[i].getElementsByTagName("td"), function( index, td ){
+	    if (td) {
+		if ( td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+		    hit=true;
+		}
+	    } else {
+		hit=true;
+	    }
+	} );
+	if ( hit === true){
+            tr[i].style.display = "";
+	} else {
+            tr[i].style.display = "none";
+	}
+    }
+}
+</script>		      
 
 </script>
 
