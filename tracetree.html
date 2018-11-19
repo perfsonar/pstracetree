@@ -325,8 +325,8 @@ function tr_slice( start, range){
     for ( slice of slices ){
 	if ( slice.tr_data && slice.start <= start
 	     && (slice.start+slice.range) >= endms){
-	    for ( tr of slice.tr_data ){
-		if ( tr.ts >= startms && tr.ts <= endms ){
+	    for ( tr of slice.tr_data ){ // if no data in interval continue until at least one
+		if ( tr.ts >= startms && ( tr.ts <= endms || extract.length <= 0 ) ){
 		    extract.push(tr);
 		}
 	    }
@@ -340,8 +340,8 @@ function tr_slice_old(tr_data, start, range){
     var startms=start;
     var endms=startms+range;
     if ( tr_data ){
-	for ( tr of tr_data ){
-	    if ( tr.ts >= startms && tr.ts <= endms ){
+	for ( tr of tr_data ){  // if no data in interval continue until at least one
+	    if ( tr.ts >= startms && ( tr.ts <= endms || slice.length <= 0 )){
 		slice.push(tr);
 	    }
 	}
