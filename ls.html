@@ -45,8 +45,9 @@ function fetch_ma(loc){
     var url= 'cors.php?method=GET&url=' + loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
  
+    //var head='<font style="font-weight:bold; font-size:large;">Measurement archives</font> ';
     var head='<input type="text" id="ma_in" onkeyup="search_table_ma()" placeholder="Search table..">';
-    head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>Url1<th>Url2<th>Url3<th>Url4</thead><tbody>';
+    head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
 
     // $.getJSON( encodeURI(url), function( mas){
@@ -56,10 +57,16 @@ function fetch_ma(loc){
 	    if ( ma["psservice-eventtypes"].indexOf( "packet-trace") >= 0 ){
 		// console.log (ma["location-sitename"] + ' - ' + ma["service-locator"][0]);
 		var tr = '<tr><td>'+ ma["service-name"] + '<td>' + ma["location-sitename"] + '<td>' + ma["location-country"];
+		var first=true;
 		$.each( ma["service-locator"], function( index, base ){
+		    if ( first){
+			tr+='<td>';
+			first=false;
+		    }
+			
 		    var srv = base.split("/").slice(0,3).join("/");
 	    	    // tr += '<td><a href="ls.html?ma=' + base + '">' + srv  + '</a>' ;
-		    tr += '<td><button onclick=fetch_base("' + base + '")>' + srv  + '</button>' ;
+		    tr += '<button onclick=fetch_base("' + base + '")> ' + srv  + '</button> ' ;
 		} );
 		//$('#ma_table tr:last').after( tr);
 		head+=tr;
