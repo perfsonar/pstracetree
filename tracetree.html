@@ -13,8 +13,9 @@
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.js" type="text/javascript"></script>
-<script href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.css" rel="stylesheet" type="text/css"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/vis.js" type="text/javascript"></script>
+    <script href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/vis.css" rel="stylesheet" type="text/css"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
 <script src="sorttable.js"></script>
 <style>
 .highcharts-tooltip h3 {
@@ -91,6 +92,9 @@ table.sortable thead {
     font-weight: bold;
     cursor: default;
 }
+
+tr.ipadr {width: 300px;}
+td.num {text-align: right;}
 </style>
 
 </head>
@@ -110,9 +114,9 @@ table.sortable thead {
 	title='Start automatic layout processing'>Start</button>
 <button id="copytree" onclick="copy_div('treetainer');"
 title='Copy current topology to new tab'>Copy topology</button>
-    <font style="font-weight:bold; font-size:large;">Traceroute charts <span id=tracepath></span></font>
+    <font style="font-weight:bold; font-size:large;">Traceroute charts <span id=tracepeers></span></font>
 
- <button style="float:right">Version 0.3</button>
+ <button style="float:right">Version 0.4</button>
 
 
 <!--    <button id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
@@ -134,16 +138,21 @@ title='Copy current topology to new tab'>Copy topology</button>
   
   <ul>
     <li><a href="#topo">Topology</a>
-    <li><a href="#tablewise">Table</a>
     <li><a href="#hopgraph">Hops</a>
-    <li><a href="#dok">Docs</a>
+    <li><a href="#hoptablein">Hop stats</a>
+    <li><a href="#trace_table">Traceroute</a>
+     <li><a href="#dok">Docs</a>
   </ul>
 
-  <div id=topo>
-
-      <div id=legend style=float:right> </div>
+    <div id=topo>
+      <table style=float:right>
+        <tr><td><div id=legend > </div>
+        <tr><td><span id=awaiting display:none>
+        <img style="margin:auto" width=30 height=30 src="time-passing.svg">
+      </span></td>
+    </table>
 	 
-      <div class=popup id="treetainer" style="height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
+    <div class=popup id="treetainer" style="height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
          <img style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
          <h1 align=middle>Processing automatic topology layout</h1>
       </div>
@@ -158,6 +167,9 @@ title='Copy current topology to new tab'>Copy topology</button>
     <div id=hopgraph>
       <div id="hoptainer" style="height: 600px; min-width: 90%; max-width: 1500px; margin: 0 auto"></div>
     </div>
+
+    <div id=hoptablein></div>
+    <div id=trace_table></div>
 
     <div id=dok>
       <h2>Traceroute reports</h2>
@@ -179,13 +191,16 @@ og the enclosing interval.
 	</dl>
 	
     </div>
-</div>
+    </div>
+
 
 <div id=scroll>
+    <div id=timeline></div>
 
-    <table border=1>
+    <div id=oldui style="display: none;">
+    <table border=1 align=center>
     <tr align=center>
-
+ 
     <td><button id=slice onclick="go_to_slice(in_slice, 'same', -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>
     <td style="width:22ch"> <span id=timestart title="Currently shown time start">time span
@@ -211,20 +226,38 @@ og the enclosing interval.
                 + '/'+(in_slice.slice_count)"
 		oninput="update_timeslotOut()" 
 	-->
-      
+ 
       <span name="timeslotName" id="timeslotOut"></span>
     </div></td>
     
     <td><span id="current_span" title="current time interval"></span></td>
+
     <td><button id=slice onclick="zoom_to_slice(in_slice, 'in')"
 		  title="Zoom in to current time slice">In &dtrif;</button></td>
+ 
+
+    </table>
+    </div>
+    <div id=newui>
+     <table border=1 align=center>
+       <tr align=center>
+	 <!-- <td><button id=sliceout onclick="zoom_by_timeline( timeline, 'out')"
+title="Zoom out to longer time interval">Out &utrif;</button></td> -->
+         <td><button id=slice onclick="scroll_by_step( -1)"
+		  title="Previous time slice">&ltrif; Previous</button></td>   
+	 <!-- <td><button id=slicein onclick="zoom_by_timeline( timeline, 'in')"
+		     title="Zoom in to selected interval">Select &dtrif;</button></td> -->
+         <td><button id=slice onclick="scroll_by_step( 1)"
+                  title="Next time slice">Next &rtrif;</button></td>
      </table>
+     Drag to move window. Mouse wheel to zoom in our out after 3 sek pause. Doubleclick to zoom in 50%. Select with shift mouse and press Select.Window updated when 'end' bar changes.
+    </div>
 </div>
+
 
 <DIV id='PopUp' style='display: none; position: absolute; left: 100px; top: 50px; border: solid black 1px; padding: 10px; background-color: rgb(200,100,100); text-align: justify; font-size: 12px; width: 135px;' onmouseover="document.getElementById('PopUp').style.display = 'none' ">
 <SPAN id='PopUpText'><h1 color=red>sprettopp</h1></SPAN>
 </DIV>
-<div id=hoptablein></div>
 
 
 <div id="error"></div>
@@ -233,14 +266,16 @@ og the enclosing interval.
 var tree;    // generated traceroute topology
 var positions=[]; // last position of nodes
 var tr_data; // the ingested json stats
-var urlParams={};
+    var urlParams={};
+var timeline; // timeline object
 
 var mother={range:86400};  // the mother slice of traceroutes in ms
 var current_slice=mother;  // the current top level slice
 var in_slice=mother;   // the current zoomed in graph
 var slices=[]; // slices
 var update_time;  // last time graph was updated in ms
-var update_interval=1000;  // update graph every .. ms
+var update_interval=3000;  // update graph every .. ms
+var last_rangechange;
 slices.push(mother);
 
 var msts=1;  // convert s to ms
@@ -335,19 +370,7 @@ function tr_slice( start, range){
     }
 }
 
-function tr_slice_old(tr_data, start, range){
-    var slice=[];
-    var startms=start;
-    var endms=startms+range;
-    if ( tr_data ){
-	for ( tr of tr_data ){  // if no data in interval continue until at least one
-	    if ( tr.ts >= startms && ( tr.ts <= endms || slice.length <= 0 )){
-		slice.push(tr);
-	    }
-	}
-    }
-    return slice;
-}
+
 
 // make slice
 // *** too complex so split up between in and out slices 
@@ -423,6 +446,7 @@ function tr_slice_show(slice){
 	    slice.tree=traceroute_sum(slice.tr_data);
 	plot_tree_json(slice.tree, 'treetainer', false);
 	report_stats( slice.tree);
+	report_trace( 'diff', slice.tr_data);
 	plot_stats_hops(slice.tree);
 	in_slice=slice;
 	show_time_slice(slice);
@@ -431,6 +455,9 @@ function tr_slice_show(slice){
 	var limits=create_limits(slice.tree.nodes, node_colors);
 	taint_nodes( slice.tree.nodes, node_colors, limits)
 	create_legend('legend', node_colors, limits);
+
+	update_timeline_window(slice);
+
     } else {
 	alert("empty slice for slice " + slice.slice_no + ' starting ' + slice.start);
     }
@@ -690,6 +717,7 @@ function fetch_and_plot_gv() {
 
 function fetch_and_plot_json(slice, base) {
     // Get trace data from <pre> element of input path
+    document.getElementById('awaiting').style.display='block';
 
     show_time_slice(slice);
     in_slice=slice;
@@ -716,6 +744,8 @@ function fetch_and_plot_json(slice, base) {
 	//	  plot_tree_json(collapse_nodes(data));
 	slice.tr_data=tr_json;
 	tr_slice_show(slice);
+	update_timeline(slice);
+
 	//tr_data=data; //global variable
     })
 	.fail(function( jqxhr, textStatus, error) {
@@ -770,21 +800,6 @@ var topology;
 
 // show timespan of slice
 
-function show_time_slice_n(slice){
-    var start=new Date(slice.start*1000);
-    var end=new Date(slice.end*1000);
-
-    var end_day='';
-    var day=86
-    var t_range='';
-    
-    for ( slice of [60, 3600, 3600*24] ){
-	slice_count = range/slice;
-	if ( slice_count > 3 && slice_count < 25 )
-	    return slice;
-    }
-    return Math.floor(range/10);
-}
 
 function update_slice(){
     // update_timeslotOut();
@@ -827,6 +842,7 @@ function show_time_slice(slice){
     
     document.getElementById('current_span').innerHTML=readable_range(current_slice.range);
     update_timeslotOut();
+
 }
 
 function readable_range(secs){
@@ -862,9 +878,199 @@ function show_time_span(tr_data){
     }
     span.innerHTML= start.toLocaleDateString() + ' ' + start.toLocaleTimeString()
 	+ ' - ' + end_day + end.toLocaleTimeString();
+
+}
+
+//--------------------------------------------------------------------------------
+// timeline functions
+
+function init_timeline(){
+    var options = {'configure': false,
+		   maxHeight: 200,
+		   multiselect: true,
+		   stack: false};
+    var container = document.getElementById('timeline');
+    timeline = new vis.Timeline(container, {}, options);
+
+    timeline.on('doubleClick', function(parms){
+	console.log ('dblclick ' + parms.time + ' snapped ' + parms.snappedTime );
+	zoom_by_factor(parms, 2);
+    } );
+
+    timeline.on('select', function(parms){
+	console.log ('select ' + parms.items.length + ' type ' + parms.event.type  );
+	if ( parms.items.length > 1 ){
+	    start = parms.items[0];
+	    range = parms.items[parms.items.length-1] - start;
+	    zoom_by_timeline_slice ( start, range);
+	}
+    } );
+
+    timeline.on('timechanged', function(parms){
+	if ( parms.id === 'end' ){
+	    var start = timeline.getCustomTime( 'start') / 1000;
+	    // var end = timeline.getCustomTime( 'end') / 1000;
+	    var end = parms.time / 1000;
+	    var range = end - start;
+	    zoom_by_timeline_slice ( start, range);
+	}
+    } );
+    timeline.on('rangechanged', function( parms){
+	
+	if ( parms.byUser ){
+	    if ( parms.event.type === 'panend' ){ // just drag
+		zoom_by_rangechange();
+	    } else if ( parms.event.type === 'wheel' ){
+		if ( last_rangechange ){
+		    clearInterval(last_rangechange);
+		}
+		last_rangechange = setTimeout( zoom_by_rangechange, update_interval );
+		console.log( 'start: ' + parms.start + ' end: ' + parms.end + ' byuser ' + parms.byUser);
+	    }
+	}
+
+    } );
+
+    timeline.addCustomTime(undefined,'start');
+    timeline.addCustomTime(undefined,'end');
+    timeline.setCustomTimeTitle('Start', 'start');
+    timeline.setCustomTimeTitle('End', 'end');
+
+    /*
+    Object.keys(window).forEach(key => {
+    if (/^on/.test(key)) {
+        window.addEventListener(key.slice(2), event => {
+            console.log(event);
+        });
+    } 
+    });*/
+}
+
+
+function show_timeline(tr_data){
+    var items=[];
+    var id=0;
+    $.each(tr_data, function( ix, shot){
+	id ++;
+	var t=new Date( shot.ts * 1000);
+	items.push( {'id': shot.ts, 'type': 'point', 'start':t });
+		     /*, 'content': t.toLocaleTimeString()} */
+    } );
+    var vis_items = new vis.DataSet( items );
+
+    timeline.setItems(vis_items);
+
+}
+
+function update_timeline(n_slice){
+    var ids=[], items=[];
+    var min=100*365*86400, max=0;
+    for ( slice of slices ){
+	if ( slice.tr_data ){
+	    for ( tr of slice.tr_data ){
+		if ( ! ids[tr.ts] ){
+		    var t=new Date( tr.ts * 1000);
+		    items.push({ id: tr.ts, 'type': 'point', 'start':t });
+		    ids[tr.ts]=true;
+		    if ( tr.ts > max ) { max = tr.ts; }
+		    if ( tr.ts < min ) { min = tr.ts; }
+		}
+	    }
+	}
+    }
+    items.sort( function(a,b){
+	return a.id - b.id});
+    var vis_items = new vis.DataSet( items );
+
+    timeline.setItems(vis_items);
+
+    var r=timeline.getItemRange();    
+    //timeline.setWindow(r.min, r.max);
+}
+
+function update_timeline_window(slice){ // set selection in middle 1/3
+    var start=slice.start*1000;
+    var end= slice.end*1000;
+    var range=  slice.range * 1000;
+    var startD= new Date( start - range );
+    var endD=new Date( start + 2 * range );
+    timeline.setCustomTime( start, 'start');
+    timeline.setCustomTime( end, 'end');
+    timeline.setWindow(start-range, end+range);
+    document.getElementById('awaiting').style.display='none';
+}
+
+function zoom_by_rangechange(){
+    zoom_by_timeline( timeline, 'out');
+    last_rangechange= undefined;
+}
+
+function zoom_by_factor(parms, factor){
+    var start, range;
+    var win=timeline.getWindow();
+    start= win.start.getTime() / 1000;
+    wrange= ( win.end.getTime() / 1000 - start );
+    var center= parms.time / 1000;
+    var range = wrange / 3 / factor;
+    start = center - range/2;	
+    zoom_by_timeline_slice ( start, range);
+}
+
+
+function zoom_by_timeline(timeline, direction){
+    var start, range;
+    if ( direction === 'out' ){
+	var win=timeline.getWindow();
+	start= win.start.getTime() / 1000;
+	range= win.end.getTime() / 1000 - start;
+    } else if (direction === 'in' ){
+	var items = timeline.getSelection();
+	if ( items.length > 0){
+	    start = items[0];
+	    range = items[items.length-1] - start;
+	} else {
+	    var startms = timeline.getCustomTime( 'start');
+	    var endms = timeline.getCustomTime( 'end');
+	    if ( start !== pCustomTime.start || end != pCustomTime.end){
+		start = startms/1000;
+		range = endms/1000 - start;
+	    }
+	}
+    } else {
+	console.log('invalid direction : ' + directon );
+    }
+    
+    zoom_by_timeline_slice ( start, range);
+}
+
+
+function zoom_by_timeline_slice ( start, range){
+    document.getElementById('awaiting').style.display='block';
+	
+    var n_slice={start:start, range: range, end: start + range};
+
+    var extract = tr_slice( start, range);
+    if ( extract.length > 0 ){
+	n_slice.tr_data=extract;
+	n_slice.slice_no = compute_slice_count( range );
+	tr_slice_show( n_slice);
+    } else { // fetch new data - new motherslice or slice outside data
+	fetch_and_plot_json( n_slice, urlParams.base );
+    }
+
+    slices.push(n_slice);
+
+
+}
+function scroll_by_step(step){
+    var p_start = timeline.getCustomTime( 'start')/1000;
+    var p_end = timeline.getCustomTime( 'end')/1000;
+    var range=p_end - p_start;
+    zoom_by_timeline_slice ( p_start + range * step, range);
     
 }
 
+//--------------------------------------------------------------------------------
 
 function plot_tree_json(data, divid, copy){
     var nodes=[];
@@ -1255,6 +1461,43 @@ function report_stats(data){
     });
 }
 
+function report_trace(report_type, tr_data){
+    var phash='';
+    for ( shot of tr_data){
+	var hash='';
+	var last_ttl=0;
+	for ( hop of shot.val){
+	    if ( hop.ip){
+		last_ttl=hop.ttl;
+		hash+= hop.ttl + hop.ip;
+	    }
+	}
+	if ( report_type !== 'diff' || hash !== phash){
+	    report_trace_entry(shot, last_ttl);
+	}
+	phash=hash;
+    }
+    
+}
+
+function report_trace_entry( shot, last_ttl){
+    var start=new Date( shot.ts * 1000);
+    var html='<table border=1><caption>' + start.toLocaleDateString() +  ' '
+	+ start.toLocaleTimeString() + '</caption>';
+    html+='<thead><th>Hop<th class=ipadr>Address<th>Roundtriptime</thead><tbody>';
+
+    for ( hop of shot.val){
+	if ( hop.ttl > last_ttl)
+	    break;
+	html+='<tr><td>' + hop.ttl
+	    + '<td>' + ( hop.ip !== undefined ? hop.ip : '' )
+	    + '<td class=num>' + ( hop.rtt !== undefined ? hop.rtt.toFixed(1) : '' );
+    }
+    html+='</tbody></table>';
+    $("#trace_table").append(html);
+}
+
+
 function trf(id,val){
     return '<tr><th>' + id + '<td>' + val;
 }
@@ -1599,7 +1842,14 @@ $(document).ready( function(){
 	urlParams = {};
 	while (match = search.exec(query))
 	    urlParams[decode(match[1])] = decode(match[2]);
-	
+
+	var tracepeers='';
+	if (urlParams['from'])
+	    tracepeers += ' from ' + urlParams['from'];
+	if (urlParams['to'])
+	    tracepeers += ' to ' + urlParams['to'];
+	document.getElementById('tracepeers').innerHTML=tracepeers;
+	    
 	if ( urlParams['time-start']){
 	    mother.start = urlParams['time-start'] * msts; } // params in in sec
 	if ( urlParams['time-end']){
@@ -1651,6 +1901,9 @@ $(document).ready( function(){
 	    ; // plot_trace();
         //$( "#tabs" ).tabs();
     })();
+
+    init_timeline();
+
 });
 </script>
 

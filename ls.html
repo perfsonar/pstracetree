@@ -89,6 +89,7 @@ function fetch_ma(loc){
 
 var measurements=[]; // measurement
 var pairs={}; // list of unique peers
+var tr_events=[]; // list of events
 var urlParams = {};
 
 function fetch_base(url){
@@ -115,6 +116,7 @@ function fetch_base(url){
 		    if ( evt["event-type"] === "packet-trace" ){
 			measurements.push(evt);
 			var mno = measurements.length - 1;
+			tr_events.push( event);
 			var pair =  event["input-source"] + ' - ' + event["input-destination"];
 			if ( ! pairs[pair] ){ // avoid duplicates
 			    //var tr = '<tr><td><a href=ls.html?pair=' + mno + '>' + pair + '</a>';
@@ -146,6 +148,8 @@ function tracetree( srv, mno){
       
     var base =  srv + measurements[ mno ]['base-uri'];
     var url='tracetree.html?base=' + base;
+    url+="&from=" + tr_events[mno]["input-source"];
+    url+="&to=" + tr_events[mno]["input-destination"];
     //window.open( url, '_blank') ;
     $('#trace').html(
 	'<iframe id="itrace" width=100% height=1000 src="about:blank" frameborder="0" scrolling="yes"></iframe>');
