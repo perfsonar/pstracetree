@@ -95,6 +95,11 @@ table.sortable thead {
 
 tr.ipadr {width: 300px;}
 td.num {text-align: right;}
+
+/* vertical temp markers in timeline */
+.new_start .new_end {
+    background-color:'#e04040';
+}
 </style>
 
 </head>
@@ -138,7 +143,7 @@ title='Copy current topology to new tab'>Copy topology</button>
   
   <ul>
     <li><a href="#topo">Topology</a>
-    <li><a href="#hopgraph">Hops</a>
+    <li><a href="#hopgraph">Hop graph</a>
     <li><a href="#hoptablein">Hop stats</a>
     <li><a href="#trace_table">Traceroute</a>
      <li><a href="#dok">Docs</a>
@@ -250,7 +255,7 @@ title="Zoom out to longer time interval">Out &utrif;</button></td> -->
          <td><button id=slice onclick="scroll_by_step( 1)"
                   title="Next time slice">Next &rtrif;</button></td>
      </table>
-     Drag to move window. Mouse wheel to zoom in our out after 3 sek pause. Doubleclick to zoom in 50%. Select with shift mouse and press Select.Window updated when 'end' bar changes.
+     Drag to move window. Mouse wheel to zoom in our out after 3 sek pause. Doubleclick to zoom in 50%. Select with a range wit shift mouse.Window updated when 'end' bar changes.
     </div>
 </div>
 
@@ -276,6 +281,7 @@ var slices=[]; // slices
 var update_time;  // last time graph was updated in ms
 var update_interval=3000;  // update graph every .. ms
 var last_rangechange;
+var last_select;
 slices.push(mother);
 
 var msts=1;  // convert s to ms
@@ -430,7 +436,7 @@ function tr_slice_make( slice, slice_no, level){
 	
 	tr_slice_show( n_slice);
     } else { // fetch new data - new motherslice or slice outside data
-	fetch_and_plot_json( n_slice, urlParams.base );
+	fetch_and_plot_json( n_slice, urlParams.mahost );
     }
     in_slice=n_slice;
     slices.push( n_slice);
@@ -456,7 +462,8 @@ function tr_slice_show(slice){
 	taint_nodes( slice.tree.nodes, node_colors, limits)
 	create_legend('legend', node_colors, limits);
 
-	update_timeline_window(slice);
+	if ( slice.range > 1 )  // don't zoom timeline too close
+	    update_timeline_window(slice);
 
     } else {
 	alert("empty slice for slice " + slice.slice_no + ' starting ' + slice.start);
@@ -894,6 +901,9 @@ function init_timeline(){
 
     timeline.on('doubleClick', function(parms){
 	console.log ('dblclick ' + parms.time + ' snapped ' + parms.snappedTime );
+	if ( last_select ){
+	    clearInterval(last_select);
+	}
 	zoom_by_factor(parms, 2);
     } );
 
@@ -903,6 +913,12 @@ function init_timeline(){
 	    start = parms.items[0];
 	    range = parms.items[parms.items.length-1] - start;
 	    zoom_by_timeline_slice ( start, range);
+	} else if ( parms.items.length === 1){ // single tr :
+	    if ( last_select ){
+		clearInterval(last_select);
+	    }
+	    last_select = setTimeout(
+		zoom_by_timeline_slice( parms.items[0], 1 ), update_interval ); // 3 sek range
 	}
     } );
 
@@ -915,21 +931,48 @@ function init_timeline(){
 	    zoom_by_timeline_slice ( start, range);
 	}
     } );
+
     timeline.on('rangechanged', function( parms){
 	
 	if ( parms.byUser ){
+	    var left = parms.start / 1000;
+	    var range = ( parms.end / 1000 - left ) / 3;
+	    var start = left + range;
 	    if ( parms.event.type === 'panend' ){ // just drag
-		zoom_by_rangechange();
+		zoom_by_timeline_slice( start, range );
 	    } else if ( parms.event.type === 'wheel' ){
 		if ( last_rangechange ){
 		    clearInterval(last_rangechange);
 		}
-		last_rangechange = setTimeout( zoom_by_rangechange, update_interval );
+		last_rangechange = setTimeout( zoom_by_timeline_slice( start, range) , update_interval );
 		console.log( 'start: ' + parms.start + ' end: ' + parms.end + ' byuser ' + parms.byUser);
 	    }
+	    timeline.removeCustomTime('newstart');
+	    timeline.removeCustomTime('newend');	
 	}
 
     } );
+
+    timeline.on('rangechange', function( parms){
+	if ( parms.byUser){
+	    var win = timeline.getWindow();
+	    var left = win.start.getTime();
+	    var range = ( win.end.getTime() - left ) / 3;
+	    var start = left + range;
+	    var end = start + range;
+	    
+	    try { timeline.getCustomTime( 'newstart'); } // make new customtime
+	    catch(err) {  
+		timeline.addCustomTime(undefined,'newstart');
+		timeline.addCustomTime(undefined,'newend');
+		timeline.setCustomTimeTitle('New start', 'newstart');
+		timeline.setCustomTimeTitle('New end', 'newend');
+	    }
+	    timeline.setCustomTime( start, 'newstart');
+	    timeline.setCustomTime( end, 'newend');
+	}
+    } );
+
 
     timeline.addCustomTime(undefined,'start');
     timeline.addCustomTime(undefined,'end');
@@ -1019,10 +1062,11 @@ function zoom_by_factor(parms, factor){
 
 function zoom_by_timeline(timeline, direction){
     var start, range;
-    if ( direction === 'out' ){
+    if ( direction === 'out' ){ // zoom to middle 1/3
 	var win=timeline.getWindow();
-	start= win.start.getTime() / 1000;
-	range= win.end.getTime() / 1000 - start;
+	var left= win.start.getTime() / 1000;
+	range= ( win.end.getTime() / 1000 - left );
+	start= left + range;
     } else if (direction === 'in' ){
 	var items = timeline.getSelection();
 	if ( items.length > 0){
@@ -1055,7 +1099,7 @@ function zoom_by_timeline_slice ( start, range){
 	n_slice.slice_no = compute_slice_count( range );
 	tr_slice_show( n_slice);
     } else { // fetch new data - new motherslice or slice outside data
-	fetch_and_plot_json( n_slice, urlParams.base );
+	fetch_and_plot_json( n_slice, urlParams.mahost );
     }
 
     slices.push(n_slice);
@@ -1454,7 +1498,7 @@ function report_stats(data){
 	    '</tr>';
     });
     html += '</tbody></table>';
-    $("#hoptablein", document).prepend(html)
+    $("#hoptablein", document).html(html)
     .ready( function(){
 	//	sorttable.makeSortable( $("#stats_table") );
 	sorttable.makeSortable(document.getElementById("stats_table"))
@@ -1462,8 +1506,12 @@ function report_stats(data){
 }
 
 function report_trace(report_type, tr_data){
-    var phash='';
+    var phash='', n=0;
+    var html='';
+    $("#trace_table").html('<h2>Traceroute variants</h2>');
+    
     for ( shot of tr_data){
+	n++;
 	var hash='';
 	var last_ttl=0;
 	for ( hop of shot.val){
@@ -1473,11 +1521,22 @@ function report_trace(report_type, tr_data){
 	    }
 	}
 	if ( report_type !== 'diff' || hash !== phash){
-	    report_trace_entry(shot, last_ttl);
+	    if ( n > 1 ){
+		html +='--//-- ' + n + ' alike --//--';
+	    }
+	    if ( phash !== '' ){
+		html += '</div>';
+	    }
+	    html += '<div style="vertical-align:top; margin-right:20px; display:inline-block">';
+	    html += report_trace_entry(shot, last_ttl);
+	    n=0;
 	}
 	phash=hash;
     }
-    
+    if ( n > 1 ){
+	html+='--//-- ' + n + ' alike --//--';
+    }
+    $("#trace_table").append( html + '</div>' );
 }
 
 function report_trace_entry( shot, last_ttl){
@@ -1494,7 +1553,8 @@ function report_trace_entry( shot, last_ttl){
 	    + '<td class=num>' + ( hop.rtt !== undefined ? hop.rtt.toFixed(1) : '' );
     }
     html+='</tbody></table>';
-    $("#trace_table").append(html);
+    return html;
+    //$("#trace_table").append(html);
 }
 
 
@@ -1850,10 +1910,16 @@ $(document).ready( function(){
 	    tracepeers += ' to ' + urlParams['to'];
 	document.getElementById('tracepeers').innerHTML=tracepeers;
 	    
-	if ( urlParams['time-start']){
-	    mother.start = urlParams['time-start'] * msts; } // params in in sec
-	if ( urlParams['time-end']){
-	    mother.start = urlParams['time-end'] * msts ; }
+	if ( urlParams['stime']){
+	    var st=urlParams['stime'];
+	    if ( isNaN( st) )
+		st= new Date( st) / 1000;
+	    mother.start = st * msts; } // params in in sec
+	if ( urlParams['etime']){
+	    var end=urlParams['etime'];
+	    if ( isNaN( end) )
+		end= new Date( end) / 1000;
+	    mother.end = end * msts ; }
 	if ( urlParams['time-range']){
 	    mother.range = urlParams['time-range'] * msts; }
 
@@ -1892,8 +1958,8 @@ $(document).ready( function(){
 		+ '/'+current_slice.slice_count; */
 	} );
 
-	if ( urlParams['base'])
-	    fetch_and_plot_json(mother, urlParams['base']);
+	if ( urlParams['mahost'])
+	    fetch_and_plot_json(mother, urlParams['mahost']);
 
 	if ( urlParams['hops'])
 	    ; // fetch_and_plot(urlParams['hops']);

@@ -1,4 +1,3 @@
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -25,7 +24,7 @@ table.sortable thead {
 
 function fetch_ls(ls){
     ma_list=[];
-    var url='cors.php?method=GET&url=' + ls;
+    var url='cors.pl?method=GET&url=' + ls;
     //$.getJSON( url, function( loc){
     $.getJSON( encodeURI(url), function( loc){
 	$.each(loc.hosts, function(index, host){
@@ -42,7 +41,7 @@ function fetch_ls(ls){
 }
 
 function fetch_ma(loc){
-    var url= 'cors.php?method=GET&url=' + loc + '&type=service&service-type=ma' ;
+    var url= 'cors.pl?method=GET&url=' + loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
  
     //var head='<font style="font-weight:bold; font-size:large;">Measurement archives</font> ';
@@ -101,7 +100,7 @@ function fetch_base(url){
     }
     
     url+='&tool-name=pscheduler/traceroute';
-    url = 'cors.php?method=GET&url=' + url;
+    url = 'cors.pl?method=GET&url=' + url;
     var msg='Fetching MA ' + url;
     console.log(msg);
     $("#peers").html(msg);
@@ -147,7 +146,7 @@ function tracetree( srv, mno){
     //var srv=urlParams['ma'].split("/").slice(0,3).join("/");
       
     var base =  srv + measurements[ mno ]['base-uri'];
-    var url='tracetree.html?base=' + base;
+    var url='tracetree.html?mahost=' + base;
     url+="&from=" + tr_events[mno]["input-source"];
     url+="&to=" + tr_events[mno]["input-destination"];
     //window.open( url, '_blank') ;
@@ -177,8 +176,8 @@ $(document).ready( function(){
 	while (match = search.exec(query))
 	    urlParams[decode(match[1])] = decode(match[2]);
 	
-    	if ( urlParams['ma']){
-	    fetch_base( urlParams['ma'] );
+    	if ( urlParams['mahost']){
+	    fetch_base( urlParams['mahost'] );
 	} else {
 	    fetch_ls('http://ps-west.es.net/lookup/activehosts.json')
 	}
