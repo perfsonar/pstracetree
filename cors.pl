@@ -18,14 +18,13 @@ use HTTP::Tiny;
 # use perfSONAR_PS::Utils::GeoLookup qw(geoIPLookup);
 
 my $cgi = CGI->new();
-my $cgiout = CGI->new();
 
 my $msg=();
 my $key;
 # copy parameters
 my $params;
 foreach $key ($cgi->param){
-    if ( $key ne "" && $key ne 'method'){ 
+    if ( $key ne "url" && $key ne 'method'){ 
 	if ( $params){
 	    $params .= '&';
 	} else {
@@ -40,7 +39,7 @@ if ( $url=$cgi->param( "url" ) ) {
     
     my $response = HTTP::Tiny->new->get( $url . $params);
     # if ($response->{success}) {
-	print $response->{headers};
+	print  $cgi->header( -type => $response->{headers}{'content-type'},  -charset => 'utf-8');
 	print $response->{content};
     #}
 } else {
