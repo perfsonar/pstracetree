@@ -72,7 +72,7 @@ function fetch_ma(loc, start_time){
 		head+=tr;
 	    }
 	} );
-	$("#ma").html( head+tail)
+	$("#ma").append( head+tail)
 	    .ready( function(){
 		sorttable.makeSortable(document.getElementById("ma_table"))
 	    });
@@ -172,6 +172,7 @@ $(document).ready( function(){
     $(function(){
 	$( "#tabs" ).tabs();
     } );
+
     // (window.onpopstate = function () {
     var match,
         pl     = /\+/g,  // Regex for replacing addition symbol with a space
@@ -196,11 +197,14 @@ $(document).ready( function(){
     }
 	
     if ( urlParams['mahost']){
+	var html='<button onclick="';
+	html+="fetch_ls('http://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
+	html+='Fetch MA list</button>';
+	$("#ma").html(html);
 	
-
-	fetch_base( urlParams['mahost'], start_time );
+        fetch_base( urlParams['mahost'], start_time );
     } else {
-	fetch_ls('http://ps-west.es.net/lookup/activehosts.json', start_time)
+	fetch_ls('http://ps-west.es.net/lookup/activehosts.json', start_time);
     }
     // } );
 
