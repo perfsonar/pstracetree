@@ -1,5 +1,5 @@
-perfsonar-tracetree (0.4-0.0.a1) perfsonar-jessie-release; urgency=low
+perfsonar-tracetree (0.4-0.0.a1) perfsonar-patch-snapshot; urgency=low
 
   * Initial packaging.
 
- -- Valentin Vidic <Valentin.Vidic@CARNet.hr>  Tue, 11 Dec 2018 11:49:56 +0100
+ -- Valentin Vidic <Valentin.Vidic@CARNet.hr>  Sun, 07 Apr 2019 17:26:21 +0000
