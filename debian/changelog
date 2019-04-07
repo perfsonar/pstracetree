@@ -1,5 +1,5 @@
-perfsonar-tracetree (0.4-0.0.a1) perfsonar-patch-snapshot; urgency=low
+perfsonar-tracetree (0.4-0.0.a1) perfsonar-minor-snapshot; urgency=low
 
   * Initial packaging.
 
- -- Valentin Vidic <Valentin.Vidic@CARNet.hr>  Sun, 07 Apr 2019 17:26:21 +0000
+ -- Valentin Vidic <Valentin.Vidic@CARNet.hr>  Sun, 07 Apr 2019 17:32:21 +0000
