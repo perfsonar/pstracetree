@@ -3,11 +3,12 @@
 
 %define apacheconf apache-perfsonar-tracetree.conf
 
-%define relnum   0.0.a1
+%define perfsonar_auto_version 4.2.0
+%define perfsonar_auto_relnum 0.0.a1
 
 Name:			perfsonar-tracetree
-Version:		0.4
-Release:		%{relnum}%{?dist}
+Version:		%{perfsonar_auto_version}
+Release:		%{perfsonar_auto_relnum}%{?dist}
 Summary:		perfSONAR traceroute tree
 License:		ASL 2.0
 Group:			Development/Libraries

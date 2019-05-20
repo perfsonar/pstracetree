@@ -1,7 +1,9 @@
-PACKAGE=perfsonar-tracetree
+ACKAGE=perfsonar-tracetree
 ROOTPATH=/usr/lib/perfsonar/tracetree
-VERSION=0.4
-RELEASE=0.0.a1
+PERFSONAR_AUTO_VERSION=4.2.0
+PERFSONAR_AUTO_RELNUM=0.0.a1
+VERSION=${PERFSONAR_AUTO_VERSION}
+RELEASE=${PERFSONAR_AUTO_RELNUM}
 
 default:
 	@echo No need to build the package. Just run \"make install\"
