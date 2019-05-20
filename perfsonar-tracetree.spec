@@ -13,7 +13,7 @@ Summary:		perfSONAR traceroute tree
 License:		ASL 2.0
 Group:			Development/Libraries
 URL:			http://www.perfsonar.net
-Source0:		perfsonar-tracetree-%{version}.%{relnum}.tar.gz
+Source0:		perfsonar-tracetree-%{version}.%{perfsonar_auto_relnum}.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:		noarch
 Requires:		httpd
@@ -26,7 +26,7 @@ graph and a stats table.
 %pre
 
 %prep
-%setup -q -n perfsonar-tracetree-%{version}.%{relnum}
+%setup -q -n perfsonar-tracetree-%{version}.%{perfsonar_auto_relnum}
 
 %build
 
