@@ -1,0 +1,19 @@
+Source: perfsonar-tracetree
+Section: net
+Priority: optional
+Maintainer: perfSONAR developers <debian@perfsonar.net>
+Uploaders: Antoine Delvaux <antoine.delvaux@man.poznan.pl>,
+ Valentin Vidic <Valentin.Vidic@CARNet.hr>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.8
+Homepage: http://www.perfsonar.net/
+Vcs-Git: git://github.com/perfsonar/pstracetree
+Vcs-Browser: https://github.com/perfsonar/pstracetree
+
+Package: perfsonar-tracetree
+Architecture: all
+Depends: apache2, ${misc:Depends}
+Description: perfSONAR traceroute tree vizualization
+ The perfSONAR tracetree package presents traceroutes from perfSONAR
+ measuremet archive (Esmond). Routes are presented in form of a node
+ graph and a stats table.
