@@ -51,5 +51,5 @@ service httpd restart &> /dev/null || :
 /etc/httpd/conf.d/*
 
 %changelog
-* Mon Dec 10 2018 Valentin.Vidic@CARNet.hr 4.2.0-0.0.a1
+* Mon May 20 2019 Valentin.Vidic@CARNet.hr 4.2.0-0.0.a1
 - Initial packaging
