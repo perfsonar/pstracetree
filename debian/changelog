@@ -1,5 +1,0 @@
-perfsonar-tracetree (4.2.0~0.a1-1) perfsonar-minor-snapshot; urgency=low
-
-  * Initial packaging.
-
- -- Antoine Delvaux <antoine.delvaux@man.poznan.pl>  Mon, 20 May 2019 21:43:34 -0400

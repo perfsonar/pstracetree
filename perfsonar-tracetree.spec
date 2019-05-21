@@ -3,17 +3,16 @@
 
 %define apacheconf apache-perfsonar-tracetree.conf
 
-%define perfsonar_auto_version 4.2.0
-%define perfsonar_auto_relnum 0.0.a1
+%define relnum   0.0.a1
 
 Name:			perfsonar-tracetree
-Version:		%{perfsonar_auto_version}
-Release:		%{perfsonar_auto_relnum}%{?dist}
+Version:		0.4
+Release:		%{relnum}%{?dist}
 Summary:		perfSONAR traceroute tree
 License:		ASL 2.0
 Group:			Development/Libraries
 URL:			http://www.perfsonar.net
-Source0:		perfsonar-tracetree-%{version}.%{perfsonar_auto_relnum}.tar.gz
+Source0:		perfsonar-tracetree-%{version}.%{relnum}.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:		noarch
 Requires:		httpd
@@ -26,7 +25,7 @@ graph and a stats table.
 %pre
 
 %prep
-%setup -q -n perfsonar-tracetree-%{version}.%{perfsonar_auto_relnum}
+%setup -q -n perfsonar-tracetree-%{version}.%{relnum}
 
 %build
 
@@ -51,5 +50,5 @@ service httpd restart &> /dev/null || :
 /etc/httpd/conf.d/*
 
 %changelog
-* Mon Dec 10 2018 Valentin.Vidic@CARNet.hr 4.2.0-0.0.a1
+* Mon Dec 10 2018 Valentin.Vidic@CARNet.hr 4.1-0.0.a1
 - Initial packaging
