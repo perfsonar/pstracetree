@@ -131,10 +131,10 @@ title='Copy current topology to new tab'>Copy topology</button>
     <font style="font-weight:bold; font-size:large;">Traceroute charts <span id=tracepeers></span></font>
 
 
-
-<!--    <button id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
+<-- -->
+    <button id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
     <button id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
-    -->
+<--    -->
 
     
 <!-- button onclick="tree.physics.stabilization.enabled=false">Update tree</button-->
@@ -772,6 +772,34 @@ function fetch_and_plot_json(slice, base) {
 	    console.log(msg);
 	    alert(msg);
 	});
+
+}
+function fetch_and_plot_topo(tpath) {
+    // Get trace data from <pre> element of input path
+    //var tpath = $("[name='gvpath']").val();
+
+    var path=tpath.split("/");
+    var dest=path[path.length-1];
+    dest=dest.replace(/\d\.json$/,"");
+    document.getElementById("raw_button").onclick= function(){
+        document.location.href="/js/traceraw.pl?mp=" + path[3] + "&index=" + path[1] +
+            "&dest=" + dest + "&date=" + path[4]; // pick up when clicking button
+    }
+    document.getElementById("summary_button").onclick= function(){
+        document.location.href="/" + path[1] + "/sum/gap-sum-" + path[4] + ".html";
+    }
+            
+      var jqxhr = $.getJSON(tpath, function( data){
+//        plot_tree_json(reduce_graph(data));
+//        plot_tree_json(collapse_nodes(data));
+          plot_tree_json(data, 'treetainer', false);
+          report_stats(data);
+          plot_stats_hops(data);
+          tr_data=data;
+      })
+        .fail(function( jqxhr, textStatus, error) {
+            console.log( "Failed to get "+ tpath + " error " + textStatus + ", " + error);
+        });
 
 }
 
@@ -2002,6 +2030,9 @@ $(document).ready( function(){
 
 	if ( urlParams['mahost'])
 	    fetch_and_plot_json(mother, urlParams['mahost']);
+
+	if ( urlParams['topo'])
+	    fetch_and_plot_topo(urlParams['topo']);
 
 	if ( urlParams['hops'])
 	    ; // fetch_and_plot(urlParams['hops']);
