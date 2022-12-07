@@ -107,8 +107,13 @@ td.num {text-align: right;}
     height: 100%; 
     position: fixed; 
     top: 0; 
-    left: 0; 
- }
+    left: 0;
+    }
+}
+div.vis-network {
+  background-color: #EBEBEB;
+}
+
 </style>
 
 </head>
@@ -152,20 +157,24 @@ title='Copy current topology to new tab'>Copy topology</button>
      <li><a href="#dok">Docs</a>
   </ul>
 
-    <div id=topo>
-    <table style=float:right>
-        <tr><td><button id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
-           title="Full screen">Full screen</button>
-        <tr><td><div id=legend > </div>
-        <tr><td><span id=awaiting display:none>
-        <img style="margin:auto" width=30 height=30 src="time-passing.svg">
-      </span></td>
+  <div id=topo class=topo style="background-color: #EBEBEB;">
+    <table><tr><td>
+	  <div class=popup id="treetainer" style="height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
+	    <img style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
+	    <h1 align=middle>Processing automatic topology layout</h1>
+	  </div>
+	</td>
+	<td><table style=float:right>
+            <tr><td><button id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
+			    title="Full screen">Full screen</button>
+	    <tr><td><div id=legend > </div>
+		    <tr><td><span id=awaiting display:none>
+			  <img style="margin:auto" width=30 height=30 src="time-passing.svg">
+		      </span></td>
+	  </table>
+	</td>
     </table>
 	 
-    <div class=popup id="treetainer" style="height: 500px; min-width: 90%; max-width: 1500px; margin: 0 auto">
-         <img style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
-         <h1 align=middle>Processing automatic topology layout</h1>
-      </div>
   </div>
  
  
@@ -728,7 +737,7 @@ function fetch_and_plot_gv() {
 	plot_tree(data);
     },'text')
 	.fail(function( jqxhr, textStatus, error) {
-	    console.log( "Failed to get "+ tpath + " error " + textStatus + ", " + error);
+	    console.log( "##4 Failed to get "+ tpath + " error " + textStatus + ", " + error);
 	});
 
 }
@@ -768,7 +777,7 @@ function fetch_and_plot_json(slice, base) {
 	//tr_data=data; //global variable
     })
 	.fail(function( jqxhr, textStatus, error) {
-	    msg= "Failed to get "+ tpath + " error " + textStatus + ", " + error;
+	    msg= "##5 Failed to get "+ tpath + " error " + textStatus + ", " + error;
 	    console.log(msg);
 	    alert(msg);
 	});
@@ -798,7 +807,7 @@ function fetch_and_plot_topo(tpath) {
           tr_data=data;
       })
         .fail(function( jqxhr, textStatus, error) {
-            console.log( "Failed to get "+ tpath + " error " + textStatus + ", " + error);
+            console.log( "##6 Failed to get "+ tpath + " error " + textStatus + ", " + error);
         });
 
 }

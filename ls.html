@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
-    <title>Traceroute chart</title>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<title>Traceroute chart</title>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -25,33 +27,36 @@ td th { padding: 2em;}
 
 function fetch_ls(ls, start_time){
     ma_list=[];
-    var url='cors.pl?method=GET&url=' + ls + '&type=service&service-type=ma';
+    var url= ls + '&type=service&service-type=ma"';
     //$.getJSON( url, function( loc){
-    $.getJSON( encodeURI(url), function( loc){
+    // $.getJSON( 'cors.pl?method=GET&url=' + encodeURI(url), function( loc){
+    $.getJSON( 'cors.pl?method=GET&url=' + url, function( loc){
 	$.each(loc.hosts, function(index, host){
 	    fetch_ma(host.locator,start_time);
 	} );
     } )
     .fail(function( jqxhr, textStatus, error) {
-	msg= "Failed to get "+ ls + " error " + textStatus + ", " + error;
+	msg= "##1 Failed to get "+ ls + " error " + textStatus + ", " + error;
 	console.log(msg);
 	// alert(msg);
 	// fuck CORS :
-	fetch_ma('http://35.237.255.214:8090/lookup/records', start_time);
+	fetch_ma('http://34.123.110.14:8090/lookup/records', start_time);
     } ); 
 }
 
 function fetch_ma(loc, start_time){
-    var url= 'cors.pl?method=GET&url=' + loc + '&type=service&service-type=ma' ;
+    var url=  loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
  
     //var head='<font style="font-weight:bold; font-size:large;">Measurement archives</font> ';
     var head='<input type="text" id="ma_in" onkeyup="search_table_ma()" placeholder="Search table..">';
     head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
+    // var cors='cors.pl?method=GET&url=' + encodeURI(url);
+    var cors='cors.pl?method=GET&url=' + url;
 
-    // $.getJSON( encodeURI(url), function( mas){
-    $.getJSON( url, function( mas){
+    $.getJSON( cors, function( mas){
+    // $.getJSON( url, function( mas){
 	var rows=[];
 	$.each(mas, function(index, ma){
 	    if ( ma["psservice-eventtypes"].indexOf( "packet-trace") >= 0 ){
@@ -72,7 +77,7 @@ function fetch_ma(loc, start_time){
 		head+=tr;
 	    }
 	} );
-	$("#ma").append( head+tail)
+	$("#ma").html( head+tail)
 	    .ready( function(){
 		sorttable.makeSortable(document.getElementById("ma_table"))
 	    });
@@ -80,9 +85,10 @@ function fetch_ma(loc, start_time){
 	//makeSortable(document.getElementById("ma_table"));
     } )
     .fail(function( jqxhr, textStatus, error) {
-	msg= "Failed to get "+ url + " error " + textStatus + ", " + error;
+	msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
 	$("#ma").innerHTML='<h3>' + msg + '</h3>';
 	console.log(msg);
+	console.log(cors);
 	alert(msg);
     });
 }
@@ -145,7 +151,7 @@ function fetch_base(url, start_time){
 	//makeSortable( document.getElementById("peer_table"));
     } )
 	.fail(function( jqxhr, textStatus, error) {
-	    msg= "Failed to get "+ url + " error " + textStatus + ", " + error;
+	    msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
 	    console.log(msg);
 	    alert(msg);
     });   
@@ -157,8 +163,13 @@ function tracetree( srv, mno){
       
     var base =  srv + measurements[ mno ]['base-uri'];
     var url='tracetree.html?mahost=' + base;
+    // url = 'cors.pl?method=GET&url=' + url;
     url+="&from=" + tr_events[mno]["input-source"];
     url+="&to=" + tr_events[mno]["input-destination"];
+
+    console.log( 'ls::tracetree ' + url );
+
+    
     //window.open( url, '_blank') ;
     $('#trace').html(
 	'<iframe id="itrace" width=100% height=1000 src="about:blank" frameborder="0" scrolling="yes"></iframe>');
