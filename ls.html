@@ -71,7 +71,7 @@ function fetch_ma(loc, start_time){
 			
 		    var srv = base.split("/").slice(0,3).join("/");
 	    	    // tr += '<td><a href="ls.html?ma=' + base + '">' + srv  + '</a>' ;
-		    tr += '<button onclick=fetch_base("' + base + '",' + start_time + ')> ' + srv  + '</button> ' ;
+		    tr += '<button onclick=fecht_base("' + base + '",' + start_time + ')> ' + srv  + '</button> ' ;
 		} );
 		//$('#ma_table tr:last').after( tr);
 		head+=tr;
@@ -163,9 +163,9 @@ function tracetree( srv, mno){
       
     var base =  srv + measurements[ mno ]['base-uri'];
     var url='tracetree.html?mahost=' + base;
-    // url = 'cors.pl?method=GET&url=' + url;
     url+="&from=" + tr_events[mno]["input-source"];
     url+="&to=" + tr_events[mno]["input-destination"];
+    //url = 'cors.pl?method=GET&url=' + encodeURI(url);
 
     console.log( 'ls::tracetree ' + url );
 
@@ -210,6 +210,7 @@ $(document).ready( function(){
     if ( urlParams['mahost']){
 	var html='<button onclick="';
 	html+="fetch_ls('http://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
+	html+="fetch_base('https://" +  urlParams['mahost'] + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
 	
