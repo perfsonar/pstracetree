@@ -1,0 +1,100 @@
+#treetainer{ /* the tracetree graph container */
+    "height: 60%; min-width: 90%; max-width: 1500px; margin: 0 auto"
+}
+
+
+.highcharts-tooltip h3 {
+    margin: 0.3em 0;
+}
+ #treepopx {
+    display:table-caption;
+    position:relative;
+    border:1px solid #000;
+    width:400px;
+    height:400px;
+}
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+    visibility: hidden;
+    width: 400px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+.popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+/* Toggle this class - hide and show the popup */
+.popup .show {
+    visibility: hidden;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
+th, td {
+    padding: 5px;
+}
+tr:nth-child(even) {background-color: #f2f2f2}
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
+tr.ipadr {width: 300px;}
+td.num {text-align: right;}
+
+/* vertical temp markers in timeline */
+.new_start .new_end {
+    background-color:'#e04040';
+}
+
+.fullscreen{
+    z-index: 9999; 
+    width: 100%; 
+    height: 100%; 
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    }
+}
+div.vis-network {
+  background-color: #EBEBEB;
+}
