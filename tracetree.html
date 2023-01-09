@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+
+<html lang=en>
 <head>
-  <!-- meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15"-->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Traceroute chart</title>
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -12,13 +13,13 @@
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js" type="text/javascript"></script>
-  <script href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css" rel="stylesheet" type="text/css"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js" ></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css" rel="stylesheet" type="text/css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css">
 
   <script src="sorttable.js"></script>
   
-  <style src=tracetree.css></style>
+  <link rel="stylesheet" href="tracetree.css">
 
 </head>
 
@@ -66,7 +67,7 @@
 	  <div id=topo class=topo style="background-color: #EBEBEB;">
 	    <table><tr><td>
 		  <div class=popup id="treetainer">
-		    <img style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
+		    <img alt=time-passing style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
 		    <h1 align=middle>Processing automatic topology layout</h1>
 		  </div>
 		</td>
@@ -74,8 +75,8 @@
 		    <tr><td><button id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
 				    title="Full screen">Full screen</button></tr>
 		    <tr><td><div id=legend > </div></tr>
-		    <tr><td><span id=awaiting display:none>
-			  <img style="margin:auto" width=30 height=30 src="time-passing.svg">
+		    <tr><td><span id=awaiting display=none>
+			  <img alt=time-passing style="margin:auto" width=30 height=30 src="time-passing.svg">
 		      </span></td>
 		  </table>
 		</td>
@@ -111,12 +112,12 @@ varies port numbers and by hit different flows each time and causes the various 
     With the right part you can use a slider to choose a sub-interval and buttons to zoom in and out
 og the enclosing interval.
 	<dl>
-	  <dt>Previous<dd>moves the time window on step back in time</dt>
-	  <dt>Next<dd>moves the time window on step forward in time</dt>
+	  <dt>Previous<dd>moves the time window on step back in time</dd>
+	  <dt>Next<dd>moves the time window on step forward in time</dd>
 	</dl>
 	
     </div>
-    </div>
+</div>
 
 
 <div id=scroll>
@@ -126,23 +127,23 @@ og the enclosing interval.
     <table border=1 align=center>
     <tr align=center>
  
-    <td><button id=slice onclick="go_to_slice(in_slice, 'same', -1)"
+    <td><button id=prev onclick="go_to_slice(in_slice, 'same', -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>
     <td style="width:22ch"> <span id=timestart title="Currently shown time start">time span
 	    </span></td>
     <td style="width:8ch"> <span id=timespan title="Currently shown time period">time span
 	    </span></td>
-    <td><button id=slice onclick="go_to_slice(in_slice, 'same', 1)"
+    <td><button id=next onclick="go_to_slice(in_slice, 'same', 1)"
                   title="Next time slice">Next &rtrif;</button></td>
     <th>Zoom:
 
 
-    <td><button id=slice onclick="zoom_to_slice(in_slice.mother, 'out')"
+    <td><button id=zoom_out onclick="zoom_to_slice(in_slice.mother, 'out')"
 		  title="Zoom out to longer time interval">Out &utrif;</button></td>
 
     <td><div class="slidecontainer">
 	<input type="range" min="0" max="99" value="0" class="slider" id="timeslot"
-	       style="width:20, height:100%"
+	       style="width:20px; height:100%"
 	       oninput="update_slice()" 
 	       title="Select slice in current time interval">
 	
@@ -152,12 +153,12 @@ og the enclosing interval.
 		oninput="update_timeslotOut()" 
 	-->
  
-	<span name="timeslotName" id="timeslotOut"></span>
+	<span class="timeslotName" id="timeslotOut"></span>
     </div></td>
     
     <td><span id="current_span" title="current time interval"></span></td>
 
-    <td><button id=slice onclick="zoom_to_slice(in_slice, 'in')"
+    <td><button id=zoom_in onclick="zoom_to_slice(in_slice, 'in')"
 		  title="Zoom in to current time slice">In &dtrif;</button></td>
  
 
@@ -170,11 +171,11 @@ og the enclosing interval.
                   title="Zoom out to longer time interval">Out &utrif;</button></td> -->
 
          <td>Drag to move window. Mouse wheel to zoom in or out after 3 sek pause. Click to select one. 
-         <td><button id=slice onclick="scroll_by_step( -1)"
+         <td><button id=prev onclick="scroll_by_step( -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>   
 	 <!-- <td><button id=slicein onclick="zoom_by_timeline( timeline, 'in')"
 title="Zoom in to selected interval">Select &dtrif;</button></td> -->
-         <td><button id=slice onclick="scroll_by_step( 1)"
+         <td><button id=next onclick="scroll_by_step( 1)"
             title="Next time slice">Next &rtrif;</button></td>
          <td>Doubleclick to zoom in 50%. Window updated when blue 'end' bar changes.
      </table>
@@ -184,13 +185,13 @@ title="Zoom in to selected interval">Select &dtrif;</button></td> -->
 
 
 <DIV id='PopUp' style='display: none; position: absolute; left: 100px; top: 50px; border: solid black 1px; padding: 10px; background-color: rgb(200,100,100); text-align: justify; font-size: 12px; width: 135px;' onmouseover="document.getElementById('PopUp').style.display = 'none' ">
-<SPAN id='PopUpText'><h1 color=red>sprettopp</h1></SPAN>
+<SPAN id='PopUpText'>sprettopp</SPAN>
 </DIV>
 
 
 <div id="error"></div>
 
-<script src=tracetree.html></script>
+<script src=tracetree.js></script>
 
 
 
