@@ -76,7 +76,7 @@ function taint_nodes(nodes, colors, limits){
 
 
 function create_legend( elem, colors, limits){
-    var table= "<table id=legend style=float:right>\n";
+    var table= "<table id=legend>\n";
 
     var limit=0;
     
@@ -1676,7 +1676,8 @@ $(document).ready( function(){
     $(function(){
 	$( "#tabs" ).tabs();
     } );
-		      
+    document.getElementById('treetainer').style.height= window.innerHeight * 0.6 + "px" ;
+    document.getElementById('treetainer').style.width= window.innerWidth *0.7 + "px" ;
     /* get url parameteres*/
 
     // document.getElementById("tracepath").innerHTML=get_path(document.URL, 'Description');		     

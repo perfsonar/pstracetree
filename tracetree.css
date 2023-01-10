@@ -1,7 +1,18 @@
 #treetainer{ /* the tracetree graph container */
-    "height: 60%; min-width: 90%; max-width: 1500px; margin: 0 auto"
+    /* height: 700px; width: 700px; max-width: 1000px; margin: 10; */
+    /*height: 70%; min-height:800px; max-height:1000px; width: 70%; min-width: 800px; max-width: 1000px;*/ margin: 10;
+    /* position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px; */
 }
-
+#topo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+#legend{ text-align:left; vertical-align: middle} 
+/* #tree-legend{display: grid;
+  grid-template-columns: 1fr} */
+/* .canvas{ width:700px; height:700px} */
+.knapp  select, th { font-size: xx-large}
 
 .highcharts-tooltip h3 {
     margin: 0.3em 0;
@@ -95,6 +106,7 @@ td.num {text-align: right;}
     left: 0;
     }
 }
+
 div.vis-network {
   background-color: #EBEBEB;
 }

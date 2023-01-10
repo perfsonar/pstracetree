@@ -27,32 +27,32 @@
     <font style="font-weight:bold; font-size:large;">Traceroute charts <span id=tracepeers></span></font>
     <br>
     <!--    
-	    <button onclick="navigate('previous')">Previous</button>
-	    <button onclick="navigate('next')">Next</button>
-	    <button onclick="navigate('up')">Up</button>
+	    <button class=knapp onclick="navigate('previous')">Previous</button>
+	    <button class=knapp onclick="navigate('next')">Next</button>
+	    <button class=knapp onclick="navigate('up')">Up</button>
 	    -->
-    <button id="simple" onclick="plot_tree_json(collapse_nodes(in_slice.tree), 'treetainer', false);"
+    <button class=knapp id="simple" onclick="plot_tree_json(collapse_nodes(in_slice.tree), 'treetainer', false);"
 	    title='Collapse nodes within ip/24' >Simple</button>
-    <button id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
+    <button class=knapp id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
 	  title='Expand collapsed nodes'>Full</button>
-    <button id="stopp" onclick="tree.stopSimulation();"
+    <button class=knapp id="stopp" onclick="tree.stopSimulation();"
 	    title='Stop automatic layout processing'>Stop</button>
-    <button id="start" onclick="tree.startSimulation();"
+    <button class=knapp id="start" onclick="tree.startSimulation();"
 	    title='Start automatic layout processing'>Start</button>
-    <button id="copytree" onclick="copy_div('treetainer');"
+    <button class=knapp id="copytree" onclick="copy_div('treetainer');"
 	    title='Copy current topology to new tab'>Copy topology</button>
 
 
     <!-- -->
-    <button id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
-    <button id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
+    <button class=knapp id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
+    <button class=knapp id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
     <!--    -->
 
 			 
     <!-- button onclick="tree.physics.stabilization.enabled=false">Update tree</button-->
     <!-- button onclick="tree.configure.enabled=true">Update tree</button -->
 	     
-	<button style="float:right">Version 0.4</button>
+	<button class=knapp class=knapp style="float:right">Version 0.5</button>
 
 	<div id=tabs>
 	  
@@ -65,23 +65,18 @@
 	  </ul>
 
 	  <div id=topo class=topo style="background-color: #EBEBEB;">
-	    <table><tr><td>
-		  <div class=popup id="treetainer">
-		    <img alt=time-passing style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
-		    <h1 align=middle>Processing automatic topology layout</h1>
-		  </div>
-		</td>
-		<td><table style=float:right>
-		    <tr><td><button id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
-				    title="Full screen">Full screen</button></tr>
-		    <tr><td><div id=legend > </div></tr>
-		    <tr><td><span id=awaiting display=none>
-			  <img alt=time-passing style="margin:auto" width=30 height=30 src="time-passing.svg">
-		      </span></td>
-		  </table>
-		</td>
-	    </table>
-	    
+	    <div class=graph id="treetainer">
+	      <img alt=time-passing style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
+	      <h1 align=middle>Processing automatic topology layout</h1>
+	    </div>
+	    <div id=tree-legend>
+	      <button class=knapp id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
+		      title="Full screen">Full screen</button>
+	      <div id=legend > </div>
+	      <span id=awaiting display=none>
+		<img alt=time-passing style="margin:auto" width=30 height=30 src="time-passing.svg">
+	      </span>
+	    </div>
 	  </div>
  
  
@@ -127,18 +122,18 @@ og the enclosing interval.
     <table border=1 align=center>
     <tr align=center>
  
-    <td><button id=prev onclick="go_to_slice(in_slice, 'same', -1)"
+    <td><button class=knapp id=prev onclick="go_to_slice(in_slice, 'same', -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>
     <td style="width:22ch"> <span id=timestart title="Currently shown time start">time span
 	    </span></td>
     <td style="width:8ch"> <span id=timespan title="Currently shown time period">time span
 	    </span></td>
-    <td><button id=next onclick="go_to_slice(in_slice, 'same', 1)"
+    <td><button class=knapp id=next onclick="go_to_slice(in_slice, 'same', 1)"
                   title="Next time slice">Next &rtrif;</button></td>
     <th>Zoom:
 
 
-    <td><button id=zoom_out onclick="zoom_to_slice(in_slice.mother, 'out')"
+    <td><button class=knapp id=zoom_out onclick="zoom_to_slice(in_slice.mother, 'out')"
 		  title="Zoom out to longer time interval">Out &utrif;</button></td>
 
     <td><div class="slidecontainer">
@@ -158,7 +153,7 @@ og the enclosing interval.
     
     <td><span id="current_span" title="current time interval"></span></td>
 
-    <td><button id=zoom_in onclick="zoom_to_slice(in_slice, 'in')"
+    <td><button class=knapp id=zoom_in onclick="zoom_to_slice(in_slice, 'in')"
 		  title="Zoom in to current time slice">In &dtrif;</button></td>
  
 
@@ -167,15 +162,15 @@ og the enclosing interval.
     <div id=newui>
      <table border=1 align=center>
        <tr align=center>
-	 <!-- <td><button id=sliceout onclick="zoom_by_timeline( timeline, 'out')"
+	 <!-- <td><button class=knapp id=sliceout onclick="zoom_by_timeline( timeline, 'out')"
                   title="Zoom out to longer time interval">Out &utrif;</button></td> -->
 
          <td>Drag to move window. Mouse wheel to zoom in or out after 3 sek pause. Click to select one. 
-         <td><button id=prev onclick="scroll_by_step( -1)"
+         <td><button class=knapp id=prev onclick="scroll_by_step( -1)"
 		  title="Previous time slice">&ltrif; Previous</button></td>   
-	 <!-- <td><button id=slicein onclick="zoom_by_timeline( timeline, 'in')"
+	 <!-- <td><button class=knapp id=slicein onclick="zoom_by_timeline( timeline, 'in')"
 title="Zoom in to selected interval">Select &dtrif;</button></td> -->
-         <td><button id=next onclick="scroll_by_step( 1)"
+         <td><button class=knapp id=next onclick="scroll_by_step( 1)"
             title="Next time slice">Next &rtrif;</button></td>
          <td>Doubleclick to zoom in 50%. Window updated when blue 'end' bar changes.
      </table>
