@@ -143,6 +143,13 @@ function fetch_base(url, start_time){
 			    head+=tr;
 			    //$('#peer_table tr:last').after( tr);
 			    pairs[pair] = true;
+
+			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
+				// A pair of measurement nodes are already specified. Display tracetree.
+				tracetree(server, mno);
+				$('#page-title').hide();
+				return;
+			    }
 			}
 		    }
 		});
@@ -172,6 +179,9 @@ function tracetree( srv, mno){
     var url='tracetree.html?mahost=' + base;
     url+="&from=" + tr_events[mno]["input-source"];
     url+="&to=" + tr_events[mno]["input-destination"];
+    if ( urlParams["stime"] ) {
+	url+="&stime=" + urlParams["stime"];
+    }
     //url = 'cors.pl?method=GET&url=' + encodeURI(url);
 
     console.log( 'ls::tracetree ' + url );
@@ -304,7 +314,7 @@ function search_table(input,table) {
 
 </head>
 <body>
-  <h2>World Perfsonar Measurement Archives</h2>
+  <h2 id=page-title>World Perfsonar Measurement Archives</h2>
   <div id=tabs>
   
     <ul>
