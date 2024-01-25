@@ -60,7 +60,13 @@ function fetch_ma(loc, start_time){
     head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
     // var cors='cors.pl?method=GET&url=' + encodeURI(url);
-    var cors='cors.pl?method=GET&url=' + url;
+
+    var verify_SSL="";
+    if ('verify_SSL' in urlParams){
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+    }
+
+    var cors='cors.pl?' + verify_SSL + 'method=GET&url=' + url;
 
     $.getJSON( cors, function( mas){
     // $.getJSON( url, function( mas){
@@ -114,7 +120,11 @@ function fetch_base(url, start_time){
     }
     
     url+='&tool-name=pscheduler/traceroute';
-    url = 'cors.pl?method=GET&url=' + url;
+    var verify_SSL="";
+    if ('verify_SSL' in urlParams){
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+    }
+    url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + url;
     var msg='Fetching MA ' + url;
     console.log(msg);
     $("#peers").html(msg);
@@ -143,6 +153,12 @@ function fetch_base(url, start_time){
 			    head+=tr;
 			    //$('#peer_table tr:last').after( tr);
 			    pairs[pair] = true;
+
+			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
+				// A pair of measurement nodes are already specified. Display tracetree.
+				tracetree(server, mno);
+				$('#page-title').hide();
+			    }
 			}
 		    }
 		});
@@ -172,6 +188,13 @@ function tracetree( srv, mno){
     var url='tracetree.html?mahost=' + base;
     url+="&from=" + tr_events[mno]["input-source"];
     url+="&to=" + tr_events[mno]["input-destination"];
+    if ( urlParams["stime"] ) {
+	url+="&stime=" + urlParams["stime"];
+    }
+    if ('verify_SSL' in urlParams){
+	url = url + "&verify_SSL=" + urlParams['verify_SSL'];
+    }
+
     //url = 'cors.pl?method=GET&url=' + encodeURI(url);
 
     console.log( 'ls::tracetree ' + url );
@@ -304,7 +327,7 @@ function search_table(input,table) {
 
 </head>
 <body>
-  <h2>World Perfsonar Measurement Archives</h2>
+  <h2 id=page-title>World Perfsonar Measurement Archives</h2>
   <div id=tabs>
   
     <ul>

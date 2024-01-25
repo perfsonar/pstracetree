@@ -479,7 +479,11 @@ function fetch_and_plot_json(slice, base) {
     //}
 
     var url = 'cors.pl?method=GET&url=' + encodeURI(tpath);
+    if ('verify_SSL' in urlParams){
+	url = url + "&verify_SSL=" + urlParams['verify_SSL'];
+    }
     console.log('traceroute path:' + url );
+
     
     var jqxhr = $.getJSON( url, function( tr_json){
 	//	  plot_tree_json(reduce_graph(data));
