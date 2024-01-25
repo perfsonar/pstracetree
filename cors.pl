@@ -1,8 +1,10 @@
 #!/usr/bin/perl -w
 
-# circumventing CORS by relaying a http request
-# usage :  cors.pl?url=baseurl&param1=val1&param2=val2
-# expecting json format output
+# Circumventing CORS by relaying a http request
+# Expecting json format output
+# Usage :  cors.pl?url=baseurl&param1=val1&param2=val2
+#          verify_SSL=0  - will disable certificate checking (and reduce level of security)
+#   
 
 use strict;
 use CGI qw/:standard -debug/;
@@ -24,7 +26,7 @@ my $key;
 # copy parameters
 my $params;
 foreach $key ($cgi->param){
-    if ( $key ne "url" && $key ne 'method'){ 
+    if ( $key ne "url" && $key ne 'method' && $key ne 'verify_SSL'){ 
 	if ( $params){
 	    $params .= '&';
 	} else {
@@ -36,8 +38,14 @@ foreach $key ($cgi->param){
 }
 my $url;
 if ( $url=$cgi->param( "url" ) ) {
-    
-    my $response = HTTP::Tiny->new->get( $url . $params);
+
+    my $http_session;
+    if (defined $cgi->param("verify_SSL")) {
+	$http_session = HTTP::Tiny->new( ('verify_SSL' =>  $cgi->param("verify_SSL")) );
+    } else {
+	$http_session = HTTP::Tiny->new();
+    }	
+    my $response = $http_session->get( $url . $params);
     # if ($response->{success}) {
 	print  $cgi->header( -type => $response->{headers}{'content-type'},  -charset => 'utf-8');
 	print $response->{content};
