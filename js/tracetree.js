@@ -1273,11 +1273,11 @@ function report_stats(data){
 	    '</tr>';
     });
     html += '</tbody></table>';
-    $("#hoptablein", document).html(html)
-    .ready( function(){
-	//	sorttable.makeSortable( $("#stats_table") );
-	sorttable.makeSortable(document.getElementById("stats_table"))
-    });
+    
+    //$("#hoptablein", document).html(html)
+    //.ready( function(){
+//	sorttable.makeSortable(document.getElementById("stats_table"))
+  //  });
 }
 
 function report_trace(report_type, tr_data){
@@ -1429,7 +1429,7 @@ function plot_trace() {
   var tracedata=window.parent.document.getElementById('stats').innerText.split("\n");
   var chartdata = [];
 
-
+/*
   // Parse table and prepare dataset for highcharts
   var regpatt = /^\s*(\d*)\s+(\S+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+)/;
   var length = tracedata.length;
@@ -1454,8 +1454,10 @@ function plot_trace() {
     }
   }
     plot_hops(chartdata);
+*/
 }
 
+/*
 function plot_hops(chartdata){
     // Plot bubble chart
     var myChart = Highcharts.chart('hoptainer', {
@@ -1540,6 +1542,7 @@ function plot_hops(chartdata){
   });
 
 }
+*/
 
 function get_path(url,type){
     var pathre=/(mahost|topo|base)=(.+)(\&|$)/;

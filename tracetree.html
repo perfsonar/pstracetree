@@ -8,16 +8,18 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  
+
+  <!--  
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  -->
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js" ></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css" rel="stylesheet" type="text/css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css">
 
-  <script src="sorttable.js"></script>
+  <script src="js/sorttable.js"></script>
   
   <link rel="stylesheet" href="tracetree.css">
 
@@ -42,13 +44,11 @@
     <button class=knapp id="copytree" onclick="copy_div('treetainer');"
 	    title='Copy current topology to new tab'>Copy topology</button>
 
-
     <!-- -->
     <button class=knapp id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
     <button class=knapp id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
     <!--    -->
-
-			 
+    
     <!-- button onclick="tree.physics.stabilization.enabled=false">Update tree</button-->
     <!-- button onclick="tree.configure.enabled=true">Update tree</button -->
 	     
@@ -59,7 +59,7 @@
 	  <ul>
 	    <li><a href="#topo">Topology</a>
 	    <li><a href="#hopgraph">Hop graph</a>
-	    <li><a href="#hoptablein">Hop stats</a>
+<!--	    <li><a href="#hoptablein">Hop stats</a> -->
 	    <li><a href="#trace_table">Traceroute</a>
 	    <li><a href="#dok">Docs</a>
 	  </ul>
@@ -89,9 +89,9 @@
       <div id="hoptainer" style="height: 60%; min-width: 90%; max-width: 1500px; margin: 0 auto"></div>
     </div>
 
-    <div id=hoptablein></div>
+<!-- <div id=hoptablein></div> -->
     <div id=trace_table></div>
-
+    
     <div id=dok>
       <h2>Traceroute reports</h2>
     The traceroutes are collected using normal traceroute that probes hops in sequence and
@@ -186,7 +186,7 @@ title="Zoom in to selected interval">Select &dtrif;</button></td> -->
 
 <div id="error"></div>
 
-<script src=tracetree.js></script>
+<script src="js/tracetree.js"></script>
 
 
 

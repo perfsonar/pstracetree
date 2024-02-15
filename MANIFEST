@@ -2,6 +2,10 @@ LICENSE
 MANIFEST
 Makefile
 apache-perfsonar-tracetree.conf
+cors.pl
+ls.html
 sorttable.js
 time-passing.svg
+tracetree.css
 tracetree.html
+tracetree.js
