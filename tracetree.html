@@ -21,7 +21,7 @@
 
   <script src="js/sorttable.js"></script>
   
-  <link rel="stylesheet" href="tracetree.css">
+  <link rel="stylesheet" href="css/tracetree.css">
 
 </head>
 
@@ -33,48 +33,50 @@
 	    <button class=knapp onclick="navigate('next')">Next</button>
 	    <button class=knapp onclick="navigate('up')">Up</button>
 	    -->
-    <button class=knapp id="simple" onclick="plot_tree_json(collapse_nodes(in_slice.tree), 'treetainer', false);"
-	    title='Collapse nodes within ip/24' >Simple</button>
-    <button class=knapp id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
-	  title='Expand collapsed nodes'>Full</button>
-    <button class=knapp id="stopp" onclick="tree.stopSimulation();"
-	    title='Stop automatic layout processing'>Stop</button>
-    <button class=knapp id="start" onclick="tree.startSimulation();"
-	    title='Start automatic layout processing'>Start</button>
-    <button class=knapp id="copytree" onclick="copy_div('treetainer');"
-	    title='Copy current topology to new tab'>Copy topology</button>
 
-    <!-- -->
+    <!--
     <button class=knapp id=raw_button onclick="alert('Not ready yet')">Raw traceroute</button>
     <button class=knapp id=summary_button onclick="alert('Not ready yet')">Loss summary</button>
-    <!--    -->
+    -->
     
     <!-- button onclick="tree.physics.stabilization.enabled=false">Update tree</button-->
     <!-- button onclick="tree.configure.enabled=true">Update tree</button -->
 	     
-	<button class=knapp class=knapp style="float:right">Version 0.5</button>
+	<button class=knapp class=knapp style="float:right">Version 5.1.0.alfa1</button>
 
 	<div id=tabs>
 	  
 	  <ul>
-	    <li><a href="#topo">Topology</a>
-	    <li><a href="#hopgraph">Hop graph</a>
-<!--	    <li><a href="#hoptablein">Hop stats</a> -->
-	    <li><a href="#trace_table">Traceroute</a>
+	    <li title="A network graf (nodes and links) of a collection of traceroutes"><a href="#topo">Topology</a>
+<!--	    <li><a href="#hopgraph">Hop graph</a> -->
+	    <li title="A summary table of a collection of traceroutes"><a href="#hoptablein">Hop stats</a>
+	    <li title="Detailed (traditional) view of uniqe traceroutes in a collection"><a href="#trace_table">Traceroute</a>
 	    <li><a href="#dok">Docs</a>
 	  </ul>
 
 	  <div id=topo class=topo style="background-color: #EBEBEB;">
 	    <div class=graph id="treetainer">
-	      <img alt=time-passing style="display:block;margin:auto" width=200 height=200 src="time-passing.svg">
+	      <img alt=time-passing style="display:block;margin:auto" width=200 height=200 src="img/time-passing.svg">
 	      <h1 align=middle>Processing automatic topology layout</h1>
 	    </div>
 	    <div id=tree-legend>
-	      <button class=knapp id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
-		      title="Full screen">Full screen</button>
+	      <div style="width: 50px">
+		<button class=knapp id=fullscreen onclick="$('#topo').toggleClass('fullscreen');"
+			style="width: 70px" title="Full screen">Full screen</button>
+		<button class=knapp id="simple" onclick="plot_tree_json(collapse_nodes(in_slice.tree), 'treetainer', false);"
+			style="width: 70px" title='Collapse nodes within ip/24' >Simple topology</button>
+		<button class=knapp id="full" onclick="plot_tree_json(in_slice.tree, 'treetainer', false);"
+			style="width: 70px" title='Expand collapsed nodes'>Full topology</button>
+		<button class=knapp id="stopp" onclick="tree.stopSimulation();"
+			style="width: 70px" title='Stop automatic layout processing'>Stop layout</button>
+		<button class=knapp id="start" onclick="tree.startSimulation();"
+			style="width: 70px" title='Start automatic layout processing'>Start layout</button>
+		<button class=knapp id="copytree" onclick="copy_div('treetainer');"
+			style="width: 70px" title='Copy current topology to new tab'>Copy topology</button>
+	      </div>
 	      <div id=legend > </div>
 	      <span id=awaiting display=none>
-		<img alt=time-passing style="margin:auto" width=30 height=30 src="time-passing.svg">
+		<img alt=time-passing style="margin:auto" width=30 height=30 src="img/time-passing.svg">
 	      </span>
 	    </div>
 	  </div>
@@ -84,12 +86,14 @@
    <span align=left></span>
    <br><span class="popuptext" id="treepop">A Simple Popup!</span>
    -->
- 
+
+   <!--
     <div id=hopgraph>
       <div id="hoptainer" style="height: 60%; min-width: 90%; max-width: 1500px; margin: 0 auto"></div>
     </div>
+   -->
 
-<!-- <div id=hoptablein></div> -->
+    <div id=hoptablein></div>
     <div id=trace_table></div>
     
     <div id=dok>
@@ -99,8 +103,9 @@ varies port numbers and by hit different flows each time and causes the various 
     That means it does not report a particular route, just samples of nodes available on the various paths to the destination.
       <h3>Topology</h3>To construct a likely network topology we have connected nodes that apear in adjacent rows in a particular traceroute report, and then aggregating all single reports to an overall multipath-graph. One series of traceroutes is more likely to represent the state of the routing table at the time of execution, but routing can change any time so a true picture of the topology can not be constructed, and edges in the graph might not represent an actual network connection.
       <p>Dashed lines means there are non-responding routers between nodes. Color scale is log(e) responses. Hover nodes to see links and corresponding table entry. Select node to scroll to table entry. Drag nodes to fix. <font color=red>Red</font> nodes marks it as the end of  traceroute - i.e. no further route.
-	<h3>Hops</h3>
+<!--	<h3>Hops</h3>
     This graph shows how often a hop occur on the Y-axis and the hop number on the X-axis and the size of the blob show the return delay to this hop. Click nodes to see details about delay and loss. Routers may delay responding to traceroutes if they are busy with forwarding packets, so the delay might not be a good indicator for normal packet delays.
+-->
 	<h3>Navigation</h3>
     The navigation is for finding the time window to make traceroute reports for.
     To the left you see the time for the currently shown time slice.

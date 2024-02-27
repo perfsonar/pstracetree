@@ -12,17 +12,28 @@ function fetch_ls(ls, start_time){
     var url= ls + '&type=service&service-type=ma"';
     //$.getJSON( url, function( loc){
     // $.getJSON( 'cors.pl?method=GET&url=' + encodeURI(url), function( loc){
-    $.getJSON( 'cors.pl?method=GET&url=' + url, function( loc){
+
+    var verify_SSL="";
+    if ('verify_SSL' in urlParams){
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+    }
+    
+    $.getJSON( 'cors.pl?' + verify_SSL + 'method=GET&url=' + url, function( loc){
 	$.each(loc.hosts, function(index, host){
 	    fetch_ma(host.locator,start_time);
 	} );
     } )
-    .fail(function( jqxhr, textStatus, error) {
-	msg= "##1 Failed to get "+ ls + " error " + textStatus + ", " + error;
-	console.log(msg);
-	// alert(msg);
-	// fuck CORS :
-	fetch_ma('http://34.123.110.14:8090/lookup/records', start_time);
+	.fail(function( jqxhr, textStatus, error) {
+	    msg= "Failed to get "+ ls;
+	    console.log("##1 " + msg + " error " + textStatus + ", " + error );
+	    
+	    if (confirm(msg + "\nThere may be some SSL certificate issues.\n\nTry again with disabled SSL checks?")) {
+		urlParams['verify_SSL']=0;
+		fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
+	    } else {
+		$("#ma").html("<h2 style=text-align:center> No list of MAs available.</h2><p style=text-align:center>Add 'mahost=&lt;hostname/ip-address&gt;' to specify a MA host.<br/>Add 'verify_SSL=0' to disable SSL cerificate checks.</p>");
+	    }
+	//fetch_ma('https://34.123.110.14:8090/lookup/records', start_time);
     } ); 
 }
 
@@ -35,6 +46,7 @@ function fetch_ma(loc, start_time){
     head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
     // var cors='cors.pl?method=GET&url=' + encodeURI(url);
+
 
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
@@ -73,9 +85,9 @@ function fetch_ma(loc, start_time){
 	//makeSortable(document.getElementById("ma_table"));
     } )
     .fail(function( jqxhr, textStatus, error) {
-	msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
+	msg= "Failed to get "+ url + "\n\n(Error message:\n " + textStatus + ", " + error + ")";
 	$("#ma").innerHTML='<h3>' + msg + '</h3>';
-	console.log(msg);
+	console.log("##2 " + msg);
 	console.log(cors);
 	alert(msg);
     });
@@ -102,7 +114,7 @@ function fetch_base(url, start_time){
     url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + url;
     var msg='Fetching MA ' + url;
     console.log(msg);
-    $("#peers").html(msg);
+     $("#peers").html(msg);
     var head='<input type="text" id="peer_in" onkeyup="search_table_peer()" placeholder="Search table..">';
     var start=new Date(start_time*1000);
     head += ' time-start: <input type="text" id="datepicker" size=12 ';
@@ -149,8 +161,8 @@ function fetch_base(url, start_time){
 	//makeSortable( document.getElementById("peer_table"));
     } )
 	.fail(function( jqxhr, textStatus, error) {
-	    msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
-	    console.log(msg);
+	    msg= "Failed to get "+ url + "\n\n(Error message:\n" + textStatus + ", " + error + ")";
+	    console.log("##3 " + msg);
 	    alert(msg);
     });   
     // pscheduler-test-type
@@ -215,14 +227,14 @@ $(document).ready( function(){
     if ( urlParams['mahost']){
 	let base= 'https://' +  urlParams['mahost'];
 	var html='<button onclick="';
-	html+="fetch_ls('http://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
+	html+="fetch_ls('https://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
 	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
 	
         fetch_base( base + "/esmond/perfsonar/archive/", start_time );
     } else {
-	fetch_ls('http://ps-west.es.net/lookup/activehosts.json', start_time);
+	fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
     }
     // } );
 

@@ -1274,10 +1274,11 @@ function report_stats(data){
     });
     html += '</tbody></table>';
     
-    //$("#hoptablein", document).html(html)
-    //.ready( function(){
-//	sorttable.makeSortable(document.getElementById("stats_table"))
-  //  });
+    
+    $("#hoptablein", document).html(html)
+	.ready( function(){
+	    sorttable.makeSortable(document.getElementById("stats_table"))
+	});
 }
 
 function report_trace(report_type, tr_data){
@@ -1420,7 +1421,7 @@ function plot_stats_hops(data){
 	    loss: s.loss });
 	phop=s.hop;
     });
-    plot_hops(chartdata);
+    //plot_hops(chartdata);
 }
 
 function plot_trace() {
@@ -1773,5 +1774,6 @@ $(document).ready( function(){
     })();
 
     init_timeline();
+    update_slice();
 
 });

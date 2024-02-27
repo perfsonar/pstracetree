@@ -33,3 +33,13 @@ services:
     tty: true
     entrypoint: ["/bin/build-spec", "/home/rpmbuilder/rpmbuild/SPECS/perfsonar-tracetree-${DISTRO:-alma9}.spec"]
     # Run `docker-compose run --entrypoint /bin/bash rpmbuild` to achieve entrypoint: ["/bin/bash"]
+
+  testrun:
+    container_name: pstracetree
+    hostname: pstracetree
+    build:
+      context: .
+      dockerfile: Dockerfile-testrun-${DISTRO:-alma9}
+    ports:
+      - 8085:80
+      - 4435:443

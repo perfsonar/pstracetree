@@ -1,0 +1,13 @@
+FROM almalinux:9
+MAINTAINER Otto J Wittner - Sikt
+
+RUN dnf update -y && dnf install -y yum-utils && dnf config-manager --set-enabled crb &&  dnf install -y epel-release procps-ng 
+COPY RPMS/noarch/* /root/RPMS/
+RUN dnf -y install /root/RPMS/*
+
+CMD ["/usr/sbin/httpd", "-DNO_DETACH", "-DFOREGROUND"]
+
+
+
+
+

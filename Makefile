@@ -1,7 +1,9 @@
 PACKAGE=perfsonar-tracetree
-ROOTPATH=/usr/lib/perfsonar/tracetree
-VERSION=0.4
-RELEASE=0.0.a1
+ROOTPATH=/usr/lib/perfsonar/pstracetree
+PERFSONAR_AUTO_VERSION=5.1.0
+PERFSONAR_AUTO_RELNUM=alfa1
+VERSION=${PERFSONAR_AUTO_VERSION}
+RELEASE=${PERFSONAR_AUTO_RELNUM}
 
 default:
 	@echo No need to build the package. Just run \"make install\"
@@ -13,8 +15,8 @@ dist:
 	rm -rf /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
 
 install:
-	mkdir -p ${ROOTPATH}/html
-	tar ch --exclude=apache* --exclude=*spec --exclude=dependencies --exclude=MANIFEST --exclude=LICENSE --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}/html
+	mkdir -p ${ROOTPATH}
+	tar ch --exclude=apache* --exclude=*spec --exclude=dependencies --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
 
 test:
 
