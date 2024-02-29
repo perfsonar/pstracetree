@@ -1,4 +1,4 @@
-# perSONAR Tracetree
+# perfSONAR Tracetree
 
 perfSONAR Tracetree (PStracetree) is a visualization tool for traceroute measurements.
 
