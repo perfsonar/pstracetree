@@ -16,8 +16,10 @@ PStracetree may be installed from source as well as from binaries tailored for d
 
 ### From binaries
 
-  * For Redhat el8 and el9: `dnf install rpmbuild/RPMS/rpmbuild/RPMS/noarch/perfsonar-tracetree*el[8/9].noarch.rpm`
-  * For Debian and Ubuntu: <to-be-added>
+  * For Redhat el8 and el9: \
+  `dnf install rpmbuild/RPMS/rpmbuild/RPMS/noarch/perfsonar-tracetree*el[8/9].noarch.rpm`
+  * For Debian and Ubuntu: 
+  `<to-be-added>`
 
 ### From source
 
