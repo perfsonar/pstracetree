@@ -97,37 +97,52 @@ var measurements=[]; // measurement
 var tr_events=[]; // list of events
 var urlParams = {};
 
-function fetch_base(url, start_time){
+function fetch_base(url, start_time, end_time){
+    // Fetches basic list of traceroutes within a time range from an Esmond archive 
+    if (end_time == undefined) {
+	// Default range is 24h
+	end_time = start_time + 24*3600;
+    }
+    
     var pairs={}; // list of unique peers
     $('#tabs').tabs({'active': 1});
 
+    
     var server= url.split("/").slice(0,3).join("/");
     if ( url.slice(-1) !== "/" ){
 	url += "/";	
     }
+
     
-    url+='&tool-name=pscheduler/traceroute';
+    var fetch_url = url + '&tool-name=pscheduler/traceroute';
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
 	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
     }
-    url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + url;
-    var msg='Fetching MA ' + url;
+    fetch_url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + fetch_url;
+    var msg='Fetching MA ' + fetch_url;
     console.log(msg);
      $("#peers").html(msg);
     var head='<input type="text" id="peer_in" onkeyup="search_table_peer()" placeholder="Search table..">';
-    var start=new Date(start_time*1000);
-    head += ' time-start: <input type="text" id="datepicker" size=12 ';
+    var start = new Date(start_time*1000);
+    var end   = new Date(end_time*1000);
+  //  head += ' time-start: <input type="text" id="datepicker" size=12 ';
+  //  head += 'value="' + start.toLocaleDateString() + '">' ;
+    head += ' From <input type="text" id="datepicker_from" size=12 ';
     head += 'value="' + start.toLocaleDateString() + '">' ;
+    head += ' To <input type="text" id="datepicker_to" size=12 ';
+    head += 'value="' + end.toLocaleDateString() + '">' ;
     // + start.toLocaleTimeString() + ' ('+start_time+')';
-    head+='<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
-    var tail='</tbody></table>';
+    var peer_table = '<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
+    var peer_table_tail='</tbody></table>';
 
-    $.getJSON( url, function( events){
+    $.getJSON( fetch_url, function( events){
+	var traceroutes_found = false;
 	$.each(events, function(index, event){
 	    if ( event["pscheduler-test-type"] === "trace" ){
 		$.each( event["event-types"], function(index, evt){
-		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time ){
+		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time && evt["time-updated"] < end_time){
+			// Traceroute results within day 
 			measurements.push(evt);
 			var mno = measurements.length - 1;
 			tr_events.push( event);
@@ -137,26 +152,38 @@ function fetch_base(url, start_time){
 			    var tu = new Date( evt["time-updated"] * 1000 );
 			    var tr = '<tr><td>' + tu.toLocaleDateString() + 'T' + tu.toLocaleTimeString();
 			    tr += '<td><button onclick=\'tracetree("' + server + '", ' + mno + ')\'>' + pair + '</button>';
-			    head+=tr;
+			    peer_table += tr;
 			    //$('#peer_table tr:last').after( tr);
 			    pairs[pair] = true;
-
+			    traceroutes_found = true;
+		    
 			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
 				// A pair of measurement nodes are already specified. Display tracetree.
 				tracetree(server, mno);
-				$('#page-title').hide();
+				// $('#page-title').hide();
 			    }
 			}
 		    }
 		});
 	    }
 	} );
-	$("#peers").html( head + tail)
+	if (traceroutes_found ) {
+	    peer_table += "</tbody></table>";
+	} else {
+	    peer_table = "<h4>No tracroutes found.</h4>"
+	}
+//	$("#peers").html( head + tail)
+	$("#peers").html( head + peer_table )
 	    .ready( function(){
-		$( "#datepicker" ).datepicker( /* "setDate", new Date(start_time*1000)*/ );
-		$( "#datepicker" ).change( function(){
-		    fetch_base(url, new Date($(this).val()) / 1000); } );
-		sorttable.makeSortable(document.getElementById("peer_table"))
+//		$( "#datepicker" ).datepicker( /* "setDate", new Date(start_time*1000)*/ );
+//		$( "#datepicker" ).change( function(){
+		$( "#datepicker_from" ).datepicker( { defaultDate: new Date(start_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_from" ).change( function(){
+		    fetch_base(url, new Date($(this).val()) / 1000, new Date($("#datepicker_to").val()) / 1000 ); } );
+		$( "#datepicker_to" ).datepicker( { defaultDate: new Date(end_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_to" ).change( function(){
+		    fetch_base(url, new Date($("#datepicker_from").val()) / 1000, new Date($(this).val()) / 1000); } );
+		if (traceroutes_found) sorttable.makeSortable(document.getElementById("peer_table"));
 	    });
 	//makeSortable( document.getElementById("peer_table"));
     } )
@@ -223,16 +250,24 @@ $(document).ready( function(){
 	var day=  24*3600;
 	start_time = Math.floor(now / day) * day;
     }
+    
+    var end_time; // in epoch
+    if ( urlParams['time-end']){
+	end_time = new Date( urlParams['time-end'] ) / 1000;
+    } else { // start_time + 24h
+	var day=  24*3600;
+	end_time = start_time + day;
+    }
 	
     if ( urlParams['mahost']){
 	let base= 'https://' +  urlParams['mahost'];
 	var html='<button onclick="';
 	html+="fetch_ls('https://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
-	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
+//	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
 	
-        fetch_base( base + "/esmond/perfsonar/archive/", start_time );
+        fetch_base( base + "/esmond/perfsonar/archive/", start_time, end_time );
     } else {
 	fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
     }
