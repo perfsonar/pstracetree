@@ -103,8 +103,8 @@ function tr_slice( start, range){
 		    extract.push(tr);
 		}
 	    }
+	    return extract;
 	}
-	return extract;
     }
 }
 
@@ -723,7 +723,9 @@ function init_timeline(){
 		console.log( 'start: ' + parms.start + ' end: ' + parms.end + ' byuser ' + parms.byUser);
 	    }
 	    timeline.removeCustomTime('newstart');
-	    timeline.removeCustomTime('newend');	
+	    timeline.removeCustomTime('newend');
+
+	    timeline.redraw();
 	}
 
     } );
@@ -1774,6 +1776,5 @@ $(document).ready( function(){
     })();
 
     init_timeline();
-    update_slice();
 
 });

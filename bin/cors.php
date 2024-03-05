@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
    /**
    * Transport for Cross-domain AJAX calls

@@ -2,8 +2,8 @@ FROM almalinux:9
 MAINTAINER Otto J Wittner - Sikt
 
 RUN dnf update -y && dnf install -y yum-utils && dnf config-manager --set-enabled crb &&  dnf install -y epel-release procps-ng 
-COPY RPMS/noarch/* /root/RPMS/
-RUN dnf -y install /root/RPMS/*
+COPY RPMS/noarch/perfsonar-tracetree-*.el9.noarch.rpm /root
+RUN dnf -y install /root/perfsonar-tracetree-*.el9.noarch.rpm
 
 CMD ["/usr/sbin/httpd", "-DNO_DETACH", "-DFOREGROUND"]
 
