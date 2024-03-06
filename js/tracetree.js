@@ -727,6 +727,8 @@ function init_timeline(){
 
 	    timeline.redraw();
 	}
+	
+	timeline.redraw();   // ... probably not optimal to do this here...
 
     } );
 
