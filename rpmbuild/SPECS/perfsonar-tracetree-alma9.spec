@@ -39,7 +39,10 @@ Requires:               perl(JSON)
 Requires:               perl(HTTP::Tiny)
 Requires:               ca-certificates
 Requires:               js-jquery
-Requires:               js-jquery-ui
+# perfSONAR packaged open source js libs
+Requires:               perfsonar-sorttablejs
+Requires:               perfsonar-visjs
+
 
 %description
 perfSONAR tracetree provides a web based graphical viewer of
@@ -56,26 +59,26 @@ install -D -m 0755 -t %{buildroot}/%{command_base} %{buildroot}/%{pstt_web_dir}/
 rm -rf %{buildroot}/%{pstt_web_dir}/bin
 
 # Fetch visjs 4.21.0 (https://visjs.org)
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis.js https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js 
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/cross.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/cross.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/backIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/backIcon.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/addNodeIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/addNodeIcon.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/editIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/editIcon.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/connectIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/connectIcon.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/deleteIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/deleteIcon.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/upArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/upArrow.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/downArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/downArrow.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/leftArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/leftArrow.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/rightArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/rightArrow.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/plus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/plus.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/minus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/minus.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/zoomExtends.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/zoomExtends.png
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css
-curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/LICENSE https://www.apache.org/licenses/LICENSE-2.0.txt
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis.js https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js 
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/cross.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/cross.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/backIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/backIcon.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/addNodeIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/addNodeIcon.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/editIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/editIcon.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/connectIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/connectIcon.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/deleteIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/deleteIcon.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/upArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/upArrow.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/downArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/downArrow.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/leftArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/leftArrow.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/rightArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/rightArrow.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/plus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/plus.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/minus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/minus.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/img/network/zoomExtends.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/zoomExtends.png
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/visjs/4.21.0/LICENSE https://www.apache.org/licenses/LICENSE-2.0.txt
 # Fetch sorttable (https://www.kryogenix.org/code/browser/sorttable/)
-curl --create-dirs -o %{buildroot}/usr/share/javascript/sorttable/sorttable.js https://www.kryogenix.org/code/browser/sorttable/sorttable.js
-curl --create-dirs -o %{buildroot}/usr/share/javascript/sorttable/licence.html https://www.kryogenix.org/code/browser/licence.html
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/sorttable/sorttable.js https://www.kryogenix.org/code/browser/sorttable/sorttable.js
+#curl --create-dirs -o %{buildroot}/usr/share/javascript/sorttable/licence.html https://www.kryogenix.org/code/browser/licence.html
 %clean
 rm -rf %{buildroot}
 
@@ -96,7 +99,7 @@ ln -s /usr/share/javascript/visjs/4.21.0/vis.css   %{pstt_web_dir}/css/vis.css
 ln -s /usr/share/javascript/visjs/4.21.0/img   %{pstt_web_dir}/css/img 
 ln -s /usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css   %{pstt_web_dir}/css/vis-timeline-graph2d.min.css
 # Make sorttable available
-ln -s /usr/share/javascript/sorttable/sorttable.js %{pstt_web_dir}/js/sorttable.js
+ln -s /usr/share/javascript/sorttable/v2/sorttable.js %{pstt_web_dir}/js/sorttable.js
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
@@ -107,13 +110,6 @@ ln -s /usr/share/javascript/sorttable/sorttable.js %{pstt_web_dir}/js/sorttable.
 %attr(0755,perfsonar,perfsonar) %{command_base}/*
 %attr(0644,perfsonar,perfsonar) %{pstt_web_dir}/*.html
 %attr(0644,perfsonar,perfsonar) /etc/httpd/conf.d/%{apacheconf}
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/visjs/4.21.0/img/network/*
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/visjs/4.21.0/vis.css
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/visjs/4.21.0/vis.js
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/visjs/4.21.0/LICENSE
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/sorttable/sorttable.js
-%attr(0644,perfsonar,perfsonar) /usr/share/javascript/sorttable/licence.html
 
 %changelog
 * Thu Feb 15 2024 Otto.Wittner@sikt.no 5.1.0-1-alfa

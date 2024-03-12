@@ -1,8 +1,8 @@
 #
 # Build rpm packages for specified distro. 
-# Run with "DISTRO=<distro-tag> SPEC=<rpm-spec-file> docker-compose run".
+# Run with "DISTRO=<distro-tag> SPEC=<list of rpm-spec-files> docker-compose run".
 # Default distro is alma9. Valied distro tags are: alma9 centos7
-# Default rpm-spec-file is "SPECS/perfsonar-microdep.spec"
+# Default rpm-spec-files are "SPEC/*-alma9.spec"
 #     
 # Author: Otto J Wittner <otto.wittner@sikt.no>
 # Date: 2024-02-02
@@ -31,7 +31,7 @@ services:
       - ../:/home/src
     stdin_open: true
     tty: true
-    entrypoint: ["/bin/build-spec", "/home/rpmbuilder/rpmbuild/SPECS/perfsonar-tracetree-${DISTRO:-alma9}.spec"]
+    entrypoint: ["/bin/build-spec", "/home/rpmbuilder/rpmbuild/${SPEC:-SPECS/*-alma9.spec}"]
     # Run `docker-compose run --entrypoint /bin/bash rpmbuild` to achieve entrypoint: ["/bin/bash"]
 
   testrun:

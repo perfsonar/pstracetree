@@ -70,6 +70,7 @@ if [ ! -f "SPECS/$SPEC"  ]; then
     echo "Error: Copy specfile into ./SPECS/ subfolder"
     exit 1
 fi
+SPEC=SPECS/$SPEC
 
 #echo $DISTRO $BUILDROOT $SRCROOT $SPEC
 
