@@ -1,0 +1,45 @@
+#
+# Build rpm packages for specified distro. 
+# Run with "DISTRO=<distro-tag> SPEC=<list of rpm-spec-files> docker-compose run".
+# Default distro is alma9. Valied distro tags are: alma9 centos7
+# Default rpm-spec-files are "SPEC/*-alma9.spec"
+#     
+# Author: Otto J Wittner <otto.wittner@sikt.no>
+# Date: 2024-02-02
+
+#version: "3.7"
+#version: "3"
+version: "2.2"
+
+services:
+  rpmbuild:
+    container_name: ps-rpmbuilder
+    hostname: ps-rpmbuilder
+    image: rpmbuild-${DISTRO:-alma9}
+    build:
+      context: .
+      dockerfile: Dockerfile-${DISTRO:-alma9}
+    volumes:
+#      - ${BUILDROOT:-./}:/home/rpmbuilder/rpmbuild 
+#      - ${SRCROOT:-../../}:/home/src
+      - ./SPECS:/home/rpmbuilder/rpmbuild/SPECS 
+      - ./SOURCES:/home/rpmbuilder/rpmbuild/SOURCES 
+      - ./SRPMS:/home/rpmbuilder/rpmbuild/SRPMS 
+      - ./RPMS:/home/rpmbuilder/rpmbuild/RPMS
+#      - ../../:/home/src
+#     Needs 1 levels up 
+      - ../:/home/src
+    stdin_open: true
+    tty: true
+    entrypoint: ["/bin/build-spec", "/home/rpmbuilder/rpmbuild/${SPEC:-SPECS/*-alma9.spec}"]
+    # Run `docker-compose run --entrypoint /bin/bash rpmbuild` to achieve entrypoint: ["/bin/bash"]
+
+  testrun:
+    container_name: pstracetree
+    hostname: pstracetree
+    build:
+      context: .
+      dockerfile: Dockerfile-testrun-${DISTRO:-alma9}
+    ports:
+      - 8085:80
+      - 4435:443

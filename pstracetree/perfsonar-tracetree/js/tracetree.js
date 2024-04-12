@@ -103,8 +103,8 @@ function tr_slice( start, range){
 		    extract.push(tr);
 		}
 	    }
+	    return extract;
 	}
-	return extract;
     }
 }
 
@@ -723,8 +723,12 @@ function init_timeline(){
 		console.log( 'start: ' + parms.start + ' end: ' + parms.end + ' byuser ' + parms.byUser);
 	    }
 	    timeline.removeCustomTime('newstart');
-	    timeline.removeCustomTime('newend');	
+	    timeline.removeCustomTime('newend');
+
+	    timeline.redraw();
 	}
+	
+	timeline.redraw();   // ... probably not optimal to do this here...
 
     } );
 
@@ -1273,11 +1277,12 @@ function report_stats(data){
 	    '</tr>';
     });
     html += '</tbody></table>';
+    
+    
     $("#hoptablein", document).html(html)
-    .ready( function(){
-	//	sorttable.makeSortable( $("#stats_table") );
-	sorttable.makeSortable(document.getElementById("stats_table"))
-    });
+	.ready( function(){
+	    sorttable.makeSortable(document.getElementById("stats_table"))
+	});
 }
 
 function report_trace(report_type, tr_data){
@@ -1420,7 +1425,7 @@ function plot_stats_hops(data){
 	    loss: s.loss });
 	phop=s.hop;
     });
-    plot_hops(chartdata);
+    //plot_hops(chartdata);
 }
 
 function plot_trace() {
@@ -1429,7 +1434,7 @@ function plot_trace() {
   var tracedata=window.parent.document.getElementById('stats').innerText.split("\n");
   var chartdata = [];
 
-
+/*
   // Parse table and prepare dataset for highcharts
   var regpatt = /^\s*(\d*)\s+(\S+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+)/;
   var length = tracedata.length;
@@ -1454,8 +1459,10 @@ function plot_trace() {
     }
   }
     plot_hops(chartdata);
+*/
 }
 
+/*
 function plot_hops(chartdata){
     // Plot bubble chart
     var myChart = Highcharts.chart('hoptainer', {
@@ -1540,6 +1547,7 @@ function plot_hops(chartdata){
   });
 
 }
+*/
 
 function get_path(url,type){
     var pathre=/(mahost|topo|base)=(.+)(\&|$)/;

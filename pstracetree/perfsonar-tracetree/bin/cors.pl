@@ -41,7 +41,8 @@ if ( $url=$cgi->param( "url" ) ) {
 
     my $http_session;
     if (defined $cgi->param("verify_SSL")) {
-	$http_session = HTTP::Tiny->new( ('verify_SSL' =>  $cgi->param("verify_SSL")) );
+	my $verify_SSL = $cgi->param("verify_SSL");
+	$http_session = HTTP::Tiny->new( 'verify_SSL' =>  $verify_SSL );
     } else {
 	$http_session = HTTP::Tiny->new();
     }	

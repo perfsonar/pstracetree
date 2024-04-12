@@ -1,28 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-<title>Traceroute chart</title>
-
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="sorttable.js"></script>
-
-    <style>
-    /* Sortable tables */
-table.sortable thead {
-   background-color:#eee;
-   color:#666666;
-   font-weight: bold;
-    cursor: default;
-}
-td th { padding: 2em;}
-</style>
-
-<script>
 /* This is a simple perfsonar archive browser using the web api's
 It uses terminology like MA and LS from there
  Gets a list of traceroute-capable MA's
@@ -37,17 +12,28 @@ function fetch_ls(ls, start_time){
     var url= ls + '&type=service&service-type=ma"';
     //$.getJSON( url, function( loc){
     // $.getJSON( 'cors.pl?method=GET&url=' + encodeURI(url), function( loc){
-    $.getJSON( 'cors.pl?method=GET&url=' + url, function( loc){
+
+    var verify_SSL="";
+    if ('verify_SSL' in urlParams){
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+    }
+    
+    $.getJSON( 'cors.pl?' + verify_SSL + 'method=GET&url=' + url, function( loc){
 	$.each(loc.hosts, function(index, host){
 	    fetch_ma(host.locator,start_time);
 	} );
     } )
-    .fail(function( jqxhr, textStatus, error) {
-	msg= "##1 Failed to get "+ ls + " error " + textStatus + ", " + error;
-	console.log(msg);
-	// alert(msg);
-	// fuck CORS :
-	fetch_ma('http://34.123.110.14:8090/lookup/records', start_time);
+	.fail(function( jqxhr, textStatus, error) {
+	    msg= "Failed to get "+ ls;
+	    console.log("##1 " + msg + " error " + textStatus + ", " + error );
+	    
+	    if (confirm(msg + "\nThere may be some SSL certificate issues.\n\nTry again with disabled SSL checks?")) {
+		urlParams['verify_SSL']=0;
+		fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
+	    } else {
+		$("#ma").html("<h2 style=text-align:center> No list of MAs available.</h2><p style=text-align:center>Add 'mahost=&lt;hostname/ip-address&gt;' to specify a MA host.<br/>Add 'verify_SSL=0' to disable SSL cerificate checks.</p>");
+	    }
+	//fetch_ma('https://34.123.110.14:8090/lookup/records', start_time);
     } ); 
 }
 
@@ -60,6 +46,7 @@ function fetch_ma(loc, start_time){
     head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
     // var cors='cors.pl?method=GET&url=' + encodeURI(url);
+
 
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
@@ -98,9 +85,9 @@ function fetch_ma(loc, start_time){
 	//makeSortable(document.getElementById("ma_table"));
     } )
     .fail(function( jqxhr, textStatus, error) {
-	msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
+	msg= "Failed to get "+ url + "\n\n(Error message:\n " + textStatus + ", " + error + ")";
 	$("#ma").innerHTML='<h3>' + msg + '</h3>';
-	console.log(msg);
+	console.log("##2 " + msg);
 	console.log(cors);
 	alert(msg);
     });
@@ -110,37 +97,52 @@ var measurements=[]; // measurement
 var tr_events=[]; // list of events
 var urlParams = {};
 
-function fetch_base(url, start_time){
+function fetch_base(url, start_time, end_time){
+    // Fetches basic list of traceroutes within a time range from an Esmond archive 
+    if (end_time == undefined) {
+	// Default range is 24h
+	end_time = start_time + 24*3600;
+    }
+    
     var pairs={}; // list of unique peers
     $('#tabs').tabs({'active': 1});
 
+    
     var server= url.split("/").slice(0,3).join("/");
     if ( url.slice(-1) !== "/" ){
 	url += "/";	
     }
+
     
-    url+='&tool-name=pscheduler/traceroute';
+    var fetch_url = url + '&tool-name=pscheduler/traceroute';
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
 	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
     }
-    url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + url;
-    var msg='Fetching MA ' + url;
+    fetch_url = 'cors.pl?' + verify_SSL + 'method=GET&url=' + fetch_url;
+    var msg='Fetching MA ' + fetch_url;
     console.log(msg);
-    $("#peers").html(msg);
+     $("#peers").html(msg);
     var head='<input type="text" id="peer_in" onkeyup="search_table_peer()" placeholder="Search table..">';
-    var start=new Date(start_time*1000);
-    head += ' time-start: <input type="text" id="datepicker" size=12 ';
+    var start = new Date(start_time*1000);
+    var end   = new Date(end_time*1000);
+  //  head += ' time-start: <input type="text" id="datepicker" size=12 ';
+  //  head += 'value="' + start.toLocaleDateString() + '">' ;
+    head += ' From <input type="text" id="datepicker_from" size=12 ';
     head += 'value="' + start.toLocaleDateString() + '">' ;
+    head += ' To <input type="text" id="datepicker_to" size=12 ';
+    head += 'value="' + end.toLocaleDateString() + '">' ;
     // + start.toLocaleTimeString() + ' ('+start_time+')';
-    head+='<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
-    var tail='</tbody></table>';
+    var peer_table = '<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
+    var peer_table_tail='</tbody></table>';
 
-    $.getJSON( url, function( events){
+    $.getJSON( fetch_url, function( events){
+	var traceroutes_found = false;
 	$.each(events, function(index, event){
 	    if ( event["pscheduler-test-type"] === "trace" ){
 		$.each( event["event-types"], function(index, evt){
-		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time ){
+		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time && evt["time-updated"] < end_time){
+			// Traceroute results within day 
 			measurements.push(evt);
 			var mno = measurements.length - 1;
 			tr_events.push( event);
@@ -150,32 +152,44 @@ function fetch_base(url, start_time){
 			    var tu = new Date( evt["time-updated"] * 1000 );
 			    var tr = '<tr><td>' + tu.toLocaleDateString() + 'T' + tu.toLocaleTimeString();
 			    tr += '<td><button onclick=\'tracetree("' + server + '", ' + mno + ')\'>' + pair + '</button>';
-			    head+=tr;
+			    peer_table += tr;
 			    //$('#peer_table tr:last').after( tr);
 			    pairs[pair] = true;
-
+			    traceroutes_found = true;
+		    
 			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
 				// A pair of measurement nodes are already specified. Display tracetree.
 				tracetree(server, mno);
-				$('#page-title').hide();
+				// $('#page-title').hide();
 			    }
 			}
 		    }
 		});
 	    }
 	} );
-	$("#peers").html( head + tail)
+	if (traceroutes_found ) {
+	    peer_table += "</tbody></table>";
+	} else {
+	    peer_table = "<h4>No tracroutes found.</h4>"
+	}
+//	$("#peers").html( head + tail)
+	$("#peers").html( head + peer_table )
 	    .ready( function(){
-		$( "#datepicker" ).datepicker( /* "setDate", new Date(start_time*1000)*/ );
-		$( "#datepicker" ).change( function(){
-		    fetch_base(url, new Date($(this).val()) / 1000); } );
-		sorttable.makeSortable(document.getElementById("peer_table"))
+//		$( "#datepicker" ).datepicker( /* "setDate", new Date(start_time*1000)*/ );
+//		$( "#datepicker" ).change( function(){
+		$( "#datepicker_from" ).datepicker( { defaultDate: new Date(start_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_from" ).change( function(){
+		    fetch_base(url, new Date($(this).val()) / 1000, new Date($("#datepicker_to").val()) / 1000 ); } );
+		$( "#datepicker_to" ).datepicker( { defaultDate: new Date(end_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_to" ).change( function(){
+		    fetch_base(url, new Date($("#datepicker_from").val()) / 1000, new Date($(this).val()) / 1000); } );
+		if (traceroutes_found) sorttable.makeSortable(document.getElementById("peer_table"));
 	    });
 	//makeSortable( document.getElementById("peer_table"));
     } )
 	.fail(function( jqxhr, textStatus, error) {
-	    msg= "##2 Failed to get "+ url + " error " + textStatus + ", " + error;
-	    console.log(msg);
+	    msg= "Failed to get "+ url + "\n\n(Error message:\n" + textStatus + ", " + error + ")";
+	    console.log("##3 " + msg);
 	    alert(msg);
     });   
     // pscheduler-test-type
@@ -236,18 +250,26 @@ $(document).ready( function(){
 	var day=  24*3600;
 	start_time = Math.floor(now / day) * day;
     }
+    
+    var end_time; // in epoch
+    if ( urlParams['time-end']){
+	end_time = new Date( urlParams['time-end'] ) / 1000;
+    } else { // start_time + 24h
+	var day=  24*3600;
+	end_time = start_time + day;
+    }
 	
     if ( urlParams['mahost']){
 	let base= 'https://' +  urlParams['mahost'];
 	var html='<button onclick="';
-	html+="fetch_ls('http://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
-	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
+	html+="fetch_ls('https://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
+//	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
 	
-        fetch_base( base + "/esmond/perfsonar/archive/", start_time );
+        fetch_base( base + "/esmond/perfsonar/archive/", start_time, end_time );
     } else {
-	fetch_ls('http://ps-west.es.net/lookup/activehosts.json', start_time);
+	fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
     }
     // } );
 
@@ -321,27 +343,3 @@ function search_table(input,table) {
 	}
     }
 }
-</script>		      
-
-</script>
-
-</head>
-<body>
-  <h2 id=page-title>World Perfsonar Measurement Archives</h2>
-  <div id=tabs>
-  
-    <ul>
-      <li><a id=tab-ma href="#ma">Measurement Archives</a>
-      <li><a id=tab-peers href="#peers">Peers</a>
-      <li><a id=tab-trace href="#trace">Traceroute</a>
-    </ul>
-    <div id=ma><h2 style=text-align:center> Please wait for MA list!</div>
-    <div id=peers>
-      <h2 style=text-align:center> Please select measurement archive!</h2>
-    </div>
-    <div id=trace>
-      <h2 style=text-align:center>Please choose peers</h2>
-    </div>
-  </div>
-</body></html>
-

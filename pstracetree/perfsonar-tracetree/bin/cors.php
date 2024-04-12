@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
    /**
    * Transport for Cross-domain AJAX calls
@@ -10,7 +11,7 @@
    * @package CrossDomainAjax
    * @category CURL
    * @author Md Emran Hasan <phpfour@gmail.com>
-   * @link http://www.phpfour.com
+   * @link https://www.phpfour.com
    *
    * Adapted for eventor by Olav@kvittem.no 2013-05
    */

@@ -1,0 +1,24 @@
+#
+# Build rpm packages for specified distro. 
+# Run with "DISTRO=<distro-tag> SPEC=<list of rpm-spec-files> docker-compose run".
+# Default distro is el9. Valied distro tags are: el9
+#     
+# Author: Otto J Wittner <otto.wittner@sikt.no>
+# Date: 2024-02-02
+
+#version: "3.7"
+#version: "3"
+version: "2.2"
+
+services:
+  testrun:
+    container_name: pstracetree
+    hostname: pstracetree
+    build:
+      context: .
+      dockerfile: pstracetree/tests/Dockerfile-${DISTRO:-el9}
+    ports:
+      - 8085:80
+      - 4435:443
+
+
