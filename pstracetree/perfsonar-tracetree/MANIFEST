@@ -1,6 +1,4 @@
 LICENSE
-MANIFEST
-Makefile
 etc/apache-perfsonar-tracetree.conf
 bin/cors.pl
 css/ls.css

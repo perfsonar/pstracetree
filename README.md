@@ -14,10 +14,17 @@ PStracetree access currently the (legacy) Esmond perfSONAR API, hence it may vis
 
 PStracetree may be installed from source as well as from binaries tailored for different Linux distros.
 
+### Building packages
+
+Distro-packages can be build by applying [unibuild](https://github.com/perfsonar/unibuild).
+
+  * Copy *docker-compose.yml* from [unibuild/docker-envs](https://github.com/perfsonar/unibuild/tree/main/docker-envs) into the *pstracetree* project.
+  * Build el9 via `docker compose run el9 unibuild clean && docker compose run el9 unibuild build` 
+
 ### From binaries
 
   * For Redhat el8 and el9: \
-  `dnf install rpmbuild/RPMS/rpmbuild/RPMS/noarch/perfsonar-tracetree*el[8/9].noarch.rpm`
+  `dnf install unibuild-repo/*.rpm`
   * For Debian and Ubuntu: \
   `<to-be-added>`
 
@@ -43,6 +50,3 @@ The graph visualizer component, "tracetree.html", may also present a specific se
 `http://localhost/pstracetree/tracetree.html?base=<MA base-uri>&time-start=<unix-epoch-time>&time-range=<seconds>&time-end=<unix-epoch-time>&from=<src-testpoint-hostname>&to=<dst-testpoint-hostname>`\
 Note that "MA base-uri" is a specific traceroute-results-url for a pair of tespoints. ("from" and "to" only helps with displaying relevant endpoint hostnames.) 
 
-## Building packages
-
-Distro-packages can be rebuilt by running scripts in the `rpmbuild/` and `debbuild/` folders. Run `./build.sh -h` in relevant folder for instructions. (To be replaced by *unibuild* go *github actions*.)

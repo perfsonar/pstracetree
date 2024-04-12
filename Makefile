@@ -1,25 +1,17 @@
-PACKAGE=perfsonar-tracetree
-ROOTPATH=/usr/lib/perfsonar/pstracetree
-PERFSONAR_AUTO_VERSION=5.1.0
-PERFSONAR_AUTO_RELNUM=alfa1
-VERSION=${PERFSONAR_AUTO_VERSION}
-RELEASE=${PERFSONAR_AUTO_RELNUM}
+#
+# Makefile for Any Package
+#
+
+include $(wildcard unibuild/unibuild.make)
 
 default:
-	@echo No need to build the package. Just run \"make install\"
+	@echo "See README.md for instructions."
 
-dist:
-	mkdir /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-	tar ch -T MANIFEST | tar x -C /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-	tar czf $(PACKAGE)-$(VERSION).$(RELEASE).tar.gz -C /tmp $(PACKAGE)-$(VERSION).$(RELEASE)
-	rm -rf /tmp/$(PACKAGE)-$(VERSION).$(RELEASE)
-
-install:
-	mkdir -p ${ROOTPATH}
-	tar ch --exclude=apache* --exclude=*spec --exclude=dependencies --exclude=MANIFEST --exclude=Makefile -T MANIFEST | tar x -C ${ROOTPATH}
-
-test:
-
-cover:
-
-test_jenkins:
+system-test:
+	@echo "Prepareing system test of PS Tracetreep..."
+	docker compose -f pstracetree/tests/system-test.yml --project-directory . build
+	@echo "*********************************************************************"
+	@echo "* Visit https://your.host:4435/pstracetree to test running instance *"
+	@echo "*********************************************************************"
+	docker compose -f pstracetree/tests/system-test.yml --project-directory . up 
+	@echo "System test completed."
