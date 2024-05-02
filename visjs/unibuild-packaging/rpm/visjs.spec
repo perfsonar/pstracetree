@@ -18,23 +18,23 @@ A dynamic, browser based javascript visualization library. Developed by Almende 
 
 rm -rf %{buildroot}
 # Fetch visjs 4.21.0 (https://visjs.org)
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/vis.js https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js 
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/vis.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/cross.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/cross.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/backIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/backIcon.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/addNodeIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/addNodeIcon.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/editIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/editIcon.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/connectIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/connectIcon.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/deleteIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/deleteIcon.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/upArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/upArrow.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/downArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/downArrow.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/leftArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/leftArrow.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/rightArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/rightArrow.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/plus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/plus.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/minus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/minus.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/img/network/zoomExtends.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/zoomExtends.png
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/vis-timeline-graph2d.min.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css
-curl --create-dirs -o %{buildroot}/%{install_base}/visjs/4.21.0/LICENSE https://www.apache.org/licenses/LICENSE-2.0.txt
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/vis.js https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js 
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/vis.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/cross.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/cross.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/backIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/backIcon.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/addNodeIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/addNodeIcon.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/editIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/editIcon.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/connectIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/connectIcon.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/deleteIcon.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/deleteIcon.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/upArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/upArrow.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/downArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/downArrow.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/leftArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/leftArrow.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/rightArrow.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/rightArrow.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/plus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/plus.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/minus.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/minus.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/img/network/zoomExtends.png https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/img/network/zoomExtends.png
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/vis-timeline-graph2d.min.css https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css
+curl --create-dirs -Lo %{buildroot}/%{install_base}/visjs/4.21.0/LICENSE https://www.apache.org/licenses/LICENSE-2.0.txt
 
 %clean
 rm -rf %{buildroot}
