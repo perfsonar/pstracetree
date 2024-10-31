@@ -9,8 +9,8 @@
 %define apacheconf      apache-perfsonar-tracetree.conf
 
 #Version variables set by automated scripts
-%define perfsonar_auto_version 5.1.0
-%define perfsonar_auto_relnum alfa1
+%define perfsonar_auto_version 5.3.0
+%define perfsonar_auto_relnum 1
 
 %define release_only  %{perfsonar_auto_relnum}
 
@@ -60,6 +60,22 @@ install -D -m 0755 -t %{buildroot}/%{command_base} %{buildroot}/%{pstt_web_dir}/
 rm -rf %{buildroot}/%{pstt_web_dir}/bin
 rm -rf %{buildroot}/%{config_base}/%{apacheconf}
 
+# Make jquery and jquery-ui available
+ln -rs /usr/share/javascript/jquery/latest/jquery.min.js %{buildroot}/%{pstt_web_dir}/js/jquery.min.js
+ln -rs /usr/share/javascript/jquery/latest/jquery.min.map %{buildroot}/%{pstt_web_dir}/js/jquery.min.map
+ln -rs /usr/share/javascript/jquery-ui/jquery-ui.min.js %{buildroot}/%{pstt_web_dir}/js/jquery-ui.min.js
+ln -rs /usr/share/javascript/jquery-ui/jquery-ui.min.css %{buildroot}/%{pstt_web_dir}/css/jquery-ui.min.css
+ln -rs /usr/share/javascript/jquery-ui/images %{buildroot}/%{pstt_web_dir}/css/images
+
+# Make visjs available
+ln -rs /usr/share/javascript/visjs/4.21.0/vis.js   %{buildroot}/%{pstt_web_dir}/js/vis.js
+ln -rs /usr/share/javascript/visjs/4.21.0/vis.css   %{buildroot}/%{pstt_web_dir}/css/vis.css
+ln -rs /usr/share/javascript/visjs/4.21.0/img   %{buildroot}/%{pstt_web_dir}/css/img 
+ln -rs /usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css   %{buildroot}/%{pstt_web_dir}/css/vis-timeline-graph2d.min.css
+# Make sorttable available
+ln -rs /usr/share/javascript/sorttable/v2/sorttable.js %{buildroot}/%{pstt_web_dir}/js/sorttable.js
+
+
 %clean
 rm -rf %{buildroot}
 
@@ -69,33 +85,21 @@ if [ ! -f /etc/pki/tls/certs/localhost.crt ]; then
     openssl req -newkey rsa:2048 -nodes -keyout /etc/pki/tls/private/localhost.key -x509 -days 365 -out /etc/pki/tls/certs/localhost.crt -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
 fi
 service httpd restart &> /dev/null || :
-# Make jquery and jquery-ui available
-ln -s /usr/share/javascript/jquery/latest/jquery.min.js %{pstt_web_dir}/js/jquery.min.js
-ln -s /usr/share/javascript/jquery/latest/jquery.min.map %{pstt_web_dir}/js/jquery.min.map
-ln -s /usr/share/javascript/jquery-ui/jquery-ui.min.js %{pstt_web_dir}/js/jquery-ui.min.js
-ln -s /usr/share/javascript/jquery-ui/jquery-ui.min.css %{pstt_web_dir}/css/jquery-ui.min.css
-ln -s /usr/share/javascript/jquery-ui/images %{pstt_web_dir}/css/images
-
-# Make visjs available
-ln -s /usr/share/javascript/visjs/4.21.0/vis.js   %{pstt_web_dir}/js/vis.js
-ln -s /usr/share/javascript/visjs/4.21.0/vis.css   %{pstt_web_dir}/css/vis.css
-ln -s /usr/share/javascript/visjs/4.21.0/img   %{pstt_web_dir}/css/img 
-ln -s /usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css   %{pstt_web_dir}/css/vis-timeline-graph2d.min.css
-# Make sorttable available
-ln -s /usr/share/javascript/sorttable/v2/sorttable.js %{pstt_web_dir}/js/sorttable.js
 
 %files
 %defattr(0644,perfsonar,perfsonar,0755)
 %license %{pstt_web_dir}/LICENSE
-%attr(0644,perfsonar,perfsonar) %{pstt_web_dir}/js/*
-%attr(0644,perfsonar,perfsonar) %{pstt_web_dir}/css/*
-%attr(0644,perfsonar,perfsonar) %{pstt_web_dir}/img/*
+%{pstt_web_dir}/js
+%{pstt_web_dir}/css
+%{pstt_web_dir}/img
+%{pstt_web_dir}/*.html
 %attr(0755,perfsonar,perfsonar) %{command_base}/*
-%attr(0644,perfsonar,perfsonar) %{pstt_web_dir}/*.html
-%attr(0644,perfsonar,perfsonar) /etc/httpd/conf.d/%{apacheconf}
+%config /etc/httpd/conf.d/%{apacheconf}
 
 %changelog
-* Thu Feb 15 2024 Otto.Wittner@sikt.no 5.1.0-1-alfa
+* Thu Oct 24 2024 Otto.Wittner@sikt.no
+- Preparing for 5.3 release
+* Thu Feb 15 2024 Otto.Wittner@sikt.no
 - Restructuring and misc cleaning
 * Mon Dec 10 2018 Valentin.Vidic@CARNet.hr 4.1-0.0.a1
 - Initial packaging

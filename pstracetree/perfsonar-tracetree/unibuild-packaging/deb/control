@@ -1,0 +1,33 @@
+Source: perfsonar-tracetree
+Section: misc
+Priority: optional
+Maintainer: perfSONAR developers <debian@perfsonar.net>
+Uploaders: Otto J Wittner <otto.wittner@sikt.no>
+Build-Depends: debhelper (>= 10),
+ perl (>= 5.32)
+Standards-Version: 4.7.0.0
+Homepage: http://www.perfsonar.net
+Vcs-Git: https://github.com/perfsonar/pstracetree.git
+#Vcs-Browser: 
+
+Package: perfsonar-tracetree
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends},
+ apache2,
+ perl (>= 5.32),
+ libcgi-pm-perl, 
+ libconfig-general-perl,
+ liblog-log4perl-perl,
+ libnet-ip-perl,
+ libparams-validate-perl,
+ libjson-perl,
+ libhttp-tiny-perl,
+ ca-certificates,
+ libjs-jquery,
+ libjs-jquery-ui,
+ libjs-sorttable,
+ libjs-vis
+Description: perfSONAR graphical traceroute tree viewer
+ perfSONAR tracetree provides a web based graphical viewer of traceroute measuremets from perfSONAR archives. Routes are presented as  a node graph as well as a summrized table.
+
+

@@ -1,0 +1,5 @@
+perfsonar-tracetree (5.3.0-1) perfsonar-5.3; urgency=low
+
+  * Initial port to Debian.
+
+ -- Otto J Wittner <otto.wittner@sikt.no>  Fri, 4 Oct 2024 00:30:00 -0200

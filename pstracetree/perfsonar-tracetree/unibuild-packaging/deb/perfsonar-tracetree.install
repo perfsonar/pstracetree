@@ -1,0 +1,10 @@
+LICENSE usr/lib/perfsonar/pstracetree/
+*.html usr/lib/perfsonar/pstracetree/ 
+img/* usr/lib/perfsonar/pstracetree/img/ 
+js/* usr/lib/perfsonar/pstracetree/js/ 
+css/* usr/lib/perfsonar/pstracetree/css/ 
+bin/* usr/lib/perfsonar/bin/pstracetree_commands/
+etc/apache-perfsonar-tracetree.conf etc/apache2/conf-available/
+
+
+
