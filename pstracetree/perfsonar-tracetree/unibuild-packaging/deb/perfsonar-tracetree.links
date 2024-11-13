@@ -5,9 +5,9 @@
 /usr/share/javascript/jquery-ui/jquery-ui.min.js /usr/lib/perfsonar/pstracetree/js/jquery-ui.min.js
 /usr/share/javascript/jquery-ui/css/smoothness/jquery-ui.css /usr/lib/perfsonar/pstracetree/css/jquery-ui.css
 /usr/share/javascript/jquery-ui/css/smoothness/jquery-ui.min.css /usr/lib/perfsonar/pstracetree/css/jquery-ui.min.css
-/usr/share/javascript/visjs/vis.js   /usr/lib/perfsonar/pstracetree/js/vis.js
-/usr/share/javascript/visjs/vis.css   /usr/lib/perfsonar/pstracetree/css/vis.css
-/usr/share/javascript/visjs/img   /usr/lib/perfsonar/pstracetree/css/img 
-/usr/share/javascript/visjs/vis-timeline-graph2d.min.css   /usr/lib/perfsonar/pstracetree/css/vis-timeline-graph2d.min.css
+/usr/share/javascript/vis/vis.js   /usr/lib/perfsonar/pstracetree/js/vis.js
+/usr/share/javascript/vis/vis.css   /usr/lib/perfsonar/pstracetree/css/vis.css
+/usr/share/javascript/vis/img   /usr/lib/perfsonar/pstracetree/css/img 
+/usr/share/javascript/vis/vis-timeline-graph2d.min.css   /usr/lib/perfsonar/pstracetree/css/vis-timeline-graph2d.min.css
 /usr/share/javascript/sorttable/sorttable.js /usr/lib/perfsonar/pstracetree/js/sorttable.js
 
