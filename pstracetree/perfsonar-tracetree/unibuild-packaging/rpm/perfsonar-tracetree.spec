@@ -35,6 +35,7 @@ Requires:               perl(Params::Validate)
 Requires:               perl(Data::Dumper)
 Requires:               perl(JSON)
 Requires:               perl(HTTP::Tiny)
+Requires:               perl(POSIX)
 Requires:               ca-certificates
 Requires:               js-jquery
 Requires:               js-jquery-ui
@@ -73,7 +74,7 @@ ln -rs /usr/share/javascript/visjs/4.21.0/vis.css   %{buildroot}/%{pstt_web_dir}
 ln -rs /usr/share/javascript/visjs/4.21.0/img   %{buildroot}/%{pstt_web_dir}/css/img 
 ln -rs /usr/share/javascript/visjs/4.21.0/vis-timeline-graph2d.min.css   %{buildroot}/%{pstt_web_dir}/css/vis-timeline-graph2d.min.css
 # Make sorttable available
-ln -rs /usr/share/javascript/sorttable/v2/sorttable.js %{buildroot}/%{pstt_web_dir}/js/sorttable.js
+ln -rs /usr/share/javascript/sorttable/2.0/sorttable.js %{buildroot}/%{pstt_web_dir}/js/sorttable.js
 
 
 %clean
