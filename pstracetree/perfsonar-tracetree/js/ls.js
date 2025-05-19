@@ -98,7 +98,7 @@ var tr_events=[]; // list of events
 var urlParams = {};
 
 function fetch_base(url, start_time, end_time){
-    // Fetches basic list of traceroutes within a time range from an Esmond archive 
+    // Fetches basic list of traceroutes within a time range from an Esmond archive
     if (end_time == undefined) {
 	// Default range is 24h
 	end_time = start_time + 24*3600;
@@ -113,8 +113,7 @@ function fetch_base(url, start_time, end_time){
 	url += "/";	
     }
 
-    
-    var fetch_url = url + '&tool-name=pscheduler/traceroute';
+    var fetch_url = fetch_url + '&tool-name=pscheduler/traceroute';
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
 	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
@@ -135,7 +134,7 @@ function fetch_base(url, start_time, end_time){
     // + start.toLocaleTimeString() + ' ('+start_time+')';
     var peer_table = '<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
     var peer_table_tail='</tbody></table>';
-
+	
     $.getJSON( fetch_url, function( events){
 	var traceroutes_found = false;
 	$.each(events, function(index, event){
@@ -192,8 +191,131 @@ function fetch_base(url, start_time, end_time){
 	    console.log("##3 " + msg);
 	    alert(msg);
     });   
+
     // pscheduler-test-type
 }
+
+function fetch_base_os(url, start_time, end_time){
+    //Fetches basic list of traceroutes within a time range from Opensearch archive 
+    if (end_time == undefined) {
+	// Default range is 24h
+	end_time = start_time + 24*3600;
+    }
+    var start_iso = new Date(start_time * 1000 ).toISOString();  // ... from milliseconds
+    var end_iso = new Date(end_time * 1000 ).toISOString();
+    
+    var pairs={}; // list of unique peers
+    $('#tabs').tabs({'active': 1});
+
+    var server= url.split("/").slice(0,3).join("/");
+    if ( url.slice(-1) !== "/" ){
+	url += "/";	
+    }
+
+    // Prepare Opensearch query to fetch app peers reporting traceroutes within time range
+    var fetch_url = url  + "opensearch/pscheduler/_search";
+    var query = JSON.stringify ({ "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, { "range": { "@date": { "gte": start_iso, "lt": end_iso } } } ] } },
+				      "size": 0,
+				      "aggs": { "peer": { "terms": { "field": "from_to.keyword", "size" : 1000000  } } }
+				    });
+
+    //    JSON.stringify( { "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, { "range": { "@date": { "gte": start_iso, "lt": end_iso } } } ] } }, "size": 0, "aggs": { "nodes": { "terms": { "field": tofrom + ".keyword", "size" : 10000  }, "aggs": { "ip": { "terms": { "field": tofrom + "_adr.keyword"}}, "city": { "terms": { "field": tofrom + "_geo.city_name.keyword"}}, "lat": { "terms":  { "field": tofrom + "_geo.latitude" } },  "lon": { "terms":  { "field": tofrom + "_geo.longitude" } } } } } } )
+
+    // Add flag controlling SSL cert verification
+    var verify_SSL="";
+    if ('verify_SSL' in urlParams){
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+    }
+    // Prepare full url to apply (including CORS circumventions)
+//    fetch_url = 'cors.pl?' + verify_SSL + 'method=POST&json=' + encodeURIComponent(json_post) + '&url=' + fetch_url;
+    fetch_url = 'cors.pl?' + verify_SSL + 'method=POST&url=' + fetch_url;
+    var msg='Fetching MA ' + fetch_url;
+    console.log(msg);
+    $("#peers").html(msg);
+
+    // Prepare table to display traceroutes found
+    var head='<input type="text" id="peer_in" onkeyup="search_table_peer()" placeholder="Search table..">';
+    var start = new Date(start_time*1000);
+    var end   = new Date(end_time*1000);
+    head += ' From <input type="text" id="datepicker_from" size=12 ';
+    head += 'value="' + start.toLocaleDateString() + '">' ;
+    head += ' To <input type="text" id="datepicker_to" size=12 ';
+    head += 'value="' + end.toLocaleDateString() + '">' ;
+    var peer_table = '<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
+    var peer_table_tail='</tbody></table>';
+
+    $.post( {url: url, data: query, contentType: "application/json", dataType: "json", success: 
+	     function(result){
+		 // Do something with the results
+		 for (var r = 0; r < result.responses.length; r++) {
+		     var respons = resuult.reponses[r]
+		 }
+	     }, fail: function( jqxhr, textStatus, error ) {
+		 var err = textStatus + ", " + error;
+		 console.log( "Request" + url + " Failed: " + err );
+	     } } );
+    
+/*    
+    $.getJSON( fetch_url, function( events){
+	var traceroutes_found = false;
+	$.each(events, function(index, event){
+	    if ( event["pscheduler-test-type"] === "trace" ){
+		$.each( event["event-types"], function(index, evt){
+		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time && evt["time-updated"] < end_time){
+			// Traceroute results within day 
+			measurements.push(evt);
+			var mno = measurements.length - 1;
+			tr_events.push( event);
+			var pair =  event["input-source"] + ' - ' + event["input-destination"];
+			if ( ! pairs[pair] ){ // avoid duplicates
+			    //var tr = '<tr><td><a href=ls.html?pair=' + mno + '>' + pair + '</a>';
+			    var tu = new Date( evt["time-updated"] * 1000 );
+			    var tr = '<tr><td>' + tu.toLocaleDateString() + 'T' + tu.toLocaleTimeString();
+			    tr += '<td><button onclick=\'tracetree("' + server + '", ' + mno + ')\'>' + pair + '</button>';
+			    peer_table += tr;
+			    //$('#peer_table tr:last').after( tr);
+			    pairs[pair] = true;
+			    traceroutes_found = true;
+		    
+			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
+				// A pair of measurement nodes are already specified. Display tracetree.
+				tracetree(server, mno);
+				// $('#page-title').hide();
+			    }
+			}
+		    }
+		});
+	    }
+	} );
+	if (traceroutes_found ) {
+	    peer_table += "</tbody></table>";
+	} else {
+	    peer_table = "<h4>No tracroutes found.</h4>"
+	}
+//	$("#peers").html( head + tail)
+	$("#peers").html( head + peer_table )
+	    .ready( function(){
+//		$( "#datepicker" ).datepicker(  "setDate", new Date(start_time*1000) );
+//		$( "#datepicker" ).change( function(){
+		$( "#datepicker_from" ).datepicker( { defaultDate: new Date(start_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_from" ).change( function(){
+		    fetch_base(url, new Date($(this).val()) / 1000, new Date($("#datepicker_to").val()) / 1000 ); } );
+		$( "#datepicker_to" ).datepicker( { defaultDate: new Date(end_time*1000), changeMonth: true, numberOfMonth: 1 });
+		$( "#datepicker_to" ).change( function(){
+		    fetch_base(url, new Date($("#datepicker_from").val()) / 1000, new Date($(this).val()) / 1000); } );
+		if (traceroutes_found) sorttable.makeSortable(document.getElementById("peer_table"));
+	    });
+	//makeSortable( document.getElementById("peer_table"));
+    } )
+	.fail(function( jqxhr, textStatus, error) {
+	    msg= "Failed to get "+ url + "\n\n(Error message:\n" + textStatus + ", " + error + ")";
+	    console.log("##3 " + msg);
+	    alert(msg);
+    });   
+*/
+
+}
+
 
 function tracetree( srv, mno){
     //var srv=urlParams['ma'].split("/").slice(0,3).join("/");
@@ -266,8 +388,14 @@ $(document).ready( function(){
 //	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
-	
-        fetch_base( base + "/esmond/perfsonar/archive/", start_time, end_time );
+
+
+	if ( urlParams['api'] === 'opensearch' ) {
+	    // Fetch content applying Opensearch API
+	    fetch_base_os( base, start_time, end_time);
+	} else {
+            fetch_base( base + "/esmond/perfsonar/archive/", start_time, end_time );
+	}
     } else {
 	fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
     }
