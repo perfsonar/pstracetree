@@ -455,6 +455,43 @@ function fetch_and_plot_gv() {
 
 }
 
+function os2esmond_traceroute(os_json){
+    // Convert traceroute json results from Opensearch to esmond style
+    var esmond_json=[];
+    
+    for (let tr=0; tr < os_json.hits.hits.length; tr++) {
+	// A traceroute results is available
+	if(urlParams['ip-version'] !== os_json.hits.hits[tr]._source.test.spec['ip-version'] )
+	   // Wrong ip version. Skip.
+	   continue;
+	   
+	let esmond_tr={};
+	esmond_tr.ts = Date.parse(os_json.hits.hits[tr]._source['@timestamp']);
+	esmond_tr.val = []; 
+	for (let tr_query=0; tr_query < os_json.hits.hits[tr]._source.result.json.length; tr_query++) {
+	    // Traceroute query result available (ref '-q' option)
+	    for (let hn=0; hn < os_json.hits.hits[tr]._source.result.json[tr_query].length; hn++) {
+		// Hop found
+		let hop={};
+		hop.ttl = hn + 1;
+		hop.query = 1;     // Unclear if required...
+		hop.success = 1;   // Unclear if required...
+		if( typeof os_json.hits.hits[tr]._source.result.json[tr_query][hn].ip != 'undefined' )
+		    hop.ip = os_json.hits.hits[tr]._source.result.json[tr_query][hn].ip;
+		if( typeof os_json.hits.hits[tr]._source.result.json[tr_query][hn].hostname != 'undefined' )
+		    hop.hostname = os_json.hits.hits[tr]._source.result.json[tr_query][hn].hostname;
+		if( typeof os_json.hits.hits[tr]._source.result.json[tr_query][hn].rtt != 'undefined' ) {
+		    // Clean off "PT" prefix + "S" postfix and convert to milliseconds
+		    hop.rtt = Number(os_json.hits.hits[tr]._source.result.json[tr_query][hn].rtt.slice(2, -1)) * 1000;
+		}
+	    	esmond_tr.val.push(hop);
+	    }
+	    // Add hop
+	    esmond_json.push(esmond_tr);
+	}
+    }
+    return esmond_json;
+}
 
 function fetch_and_plot_json(slice, base) {
     // Get trace data from <pre> element of input path
@@ -479,16 +516,27 @@ function fetch_and_plot_json(slice, base) {
     //}
 
     var url = 'cors.pl?method=GET&url=' + encodeURI(tpath);
+
+    if (urlParams['api'] == 'opensearch') {
+	// Apply request cgi for Openseach archive
+	url = 'get-tracetests.pl?mahost=' + base + '&from=' + urlParams['from'] + '&to=' + urlParams['to'] + '&start=' + urlParams['start'] + '&end=' + urlParams['end'];
+    }
+
     if ('verify_SSL' in urlParams){
 	url = url + "&verify_SSL=" + urlParams['verify_SSL'];
     }
-    console.log('traceroute path:' + url );
-
+    console.log('Fetching traceroutes via:' + url );
     
     var jqxhr = $.getJSON( url, function( tr_json){
 	//	  plot_tree_json(reduce_graph(data));
 	//	  plot_tree_json(collapse_nodes(data));
+
 	slice.tr_data=tr_json;
+	if (urlParams['api'] == 'opensearch') {
+	    // Convert received Opensearch json structure into esmond-style
+	    slice.tr_data= os2esmond_traceroute(tr_json);
+	}
+	
 	tr_slice_show(slice);
 	update_timeline(slice);
 
@@ -1706,6 +1754,7 @@ $(document).ready( function(){
 	var parm='';
 
 	urlParams = {};
+	urlParams['ip-version'] = 4;         // Default to ipv4
 	while (match = search.exec(query))
 	    urlParams[decode(match[1])] = decode(match[2]);
 

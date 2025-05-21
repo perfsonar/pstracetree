@@ -113,7 +113,7 @@ function fetch_base(url, start_time, end_time){
 	url += "/";	
     }
 
-    var fetch_url = fetch_url + '&tool-name=pscheduler/traceroute';
+    var fetch_url = url + '&tool-name=pscheduler/traceroute';
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
 	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
@@ -195,7 +195,7 @@ function fetch_base(url, start_time, end_time){
     // pscheduler-test-type
 }
 
-function fetch_base_os(url, start_time, end_time){
+function fetch_base_os(mahost, start_time, end_time){
     //Fetches basic list of traceroutes within a time range from Opensearch archive 
     if (end_time == undefined) {
 	// Default range is 24h
@@ -207,29 +207,16 @@ function fetch_base_os(url, start_time, end_time){
     var pairs={}; // list of unique peers
     $('#tabs').tabs({'active': 1});
 
-    var server= url.split("/").slice(0,3).join("/");
-    if ( url.slice(-1) !== "/" ){
-	url += "/";	
-    }
-
-    // Prepare Opensearch query to fetch app peers reporting traceroutes within time range
-    var fetch_url = url  + "opensearch/pscheduler/_search";
-    var query = JSON.stringify ({ "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, { "range": { "@date": { "gte": start_iso, "lt": end_iso } } } ] } },
-				      "size": 0,
-				      "aggs": { "peer": { "terms": { "field": "from_to.keyword", "size" : 1000000  } } }
-				    });
-
-    //    JSON.stringify( { "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, { "range": { "@date": { "gte": start_iso, "lt": end_iso } } } ] } }, "size": 0, "aggs": { "nodes": { "terms": { "field": tofrom + ".keyword", "size" : 10000  }, "aggs": { "ip": { "terms": { "field": tofrom + "_adr.keyword"}}, "city": { "terms": { "field": tofrom + "_geo.city_name.keyword"}}, "lat": { "terms":  { "field": tofrom + "_geo.latitude" } },  "lon": { "terms":  { "field": tofrom + "_geo.longitude" } } } } } } )
+    var server= mahost.split("/").slice(0,3).join("/");
 
     // Add flag controlling SSL cert verification
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
-	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'] + "&";
+	verify_SSL = "verify_SSL=" + urlParams['verify_SSL'];
     }
-    // Prepare full url to apply (including CORS circumventions)
-//    fetch_url = 'cors.pl?' + verify_SSL + 'method=POST&json=' + encodeURIComponent(json_post) + '&url=' + fetch_url;
-    fetch_url = 'cors.pl?' + verify_SSL + 'method=POST&url=' + fetch_url;
-    var msg='Fetching MA ' + fetch_url;
+    // Prepare full url to apply 
+    fetch_url = 'get-tracetests.pl?' + verify_SSL + '&mahost=' + mahost + '&start=' + start_iso + '&end=' + end_iso;
+    var msg='Fetching all traceroute peers from archive ' + mahost + ' applying ' + fetch_url;
     console.log(msg);
     $("#peers").html(msg);
 
@@ -244,49 +231,29 @@ function fetch_base_os(url, start_time, end_time){
     var peer_table = '<table id="peer_table" class=sortable border=0><thead title="Sortable"><tr><th>Time updated<th>Peers list</thead><tbody>';
     var peer_table_tail='</tbody></table>';
 
-    $.post( {url: url, data: query, contentType: "application/json", dataType: "json", success: 
-	     function(result){
-		 // Do something with the results
-		 for (var r = 0; r < result.responses.length; r++) {
-		     var respons = resuult.reponses[r]
-		 }
-	     }, fail: function( jqxhr, textStatus, error ) {
-		 var err = textStatus + ", " + error;
-		 console.log( "Request" + url + " Failed: " + err );
-	     } } );
-    
-/*    
-    $.getJSON( fetch_url, function( events){
+    $.getJSON( fetch_url, function(results){
 	var traceroutes_found = false;
-	$.each(events, function(index, event){
-	    if ( event["pscheduler-test-type"] === "trace" ){
-		$.each( event["event-types"], function(index, evt){
-		    if ( evt["event-type"] === "packet-trace" &&  evt["time-updated"] >= start_time && evt["time-updated"] < end_time){
-			// Traceroute results within day 
-			measurements.push(evt);
-			var mno = measurements.length - 1;
-			tr_events.push( event);
-			var pair =  event["input-source"] + ' - ' + event["input-destination"];
-			if ( ! pairs[pair] ){ // avoid duplicates
-			    //var tr = '<tr><td><a href=ls.html?pair=' + mno + '>' + pair + '</a>';
-			    var tu = new Date( evt["time-updated"] * 1000 );
-			    var tr = '<tr><td>' + tu.toLocaleDateString() + 'T' + tu.toLocaleTimeString();
-			    tr += '<td><button onclick=\'tracetree("' + server + '", ' + mno + ')\'>' + pair + '</button>';
-			    peer_table += tr;
-			    //$('#peer_table tr:last').after( tr);
-			    pairs[pair] = true;
-			    traceroutes_found = true;
-		    
-			    if (urlParams["from"] == event["input-source"] && urlParams["to"] == event["input-destination"] ) {
-				// A pair of measurement nodes are already specified. Display tracetree.
-				tracetree(server, mno);
-				// $('#page-title').hide();
-			    }
-			}
-		    }
-		});
+	for (var r = 0; r < results.aggregations.peers.buckets.length; r++) {
+	    // Peers found. Store.
+	    let from =  results.aggregations.peers.buckets[r].key[0];
+	    let to =  results.aggregations.peers.buckets[r].key[1];
+	    let pair =  from + ' - ' + to;
+	    if ( ! pairs[pair] ){ // Avoid duplicates
+		var tu = new Date( results.aggregations.peers.buckets[r].timestamp.value );
+		var tr = '<tr><td>' + tu.toLocaleDateString() + 'T' + tu.toLocaleTimeString();
+		tr += '<td><button onclick=\'tracetree_os("' + server + '", "' + from + '", "' + to + '", ' + start_time + ',  ' + end_time + ')\'>' + pair + '</button>';
+		peer_table += tr;
+		//$('#peer_table tr:last').after( tr);
+		pairs[pair] = true;
+		traceroutes_found = true;
+		
+		if (urlParams["from"] == from && urlParams["to"] == to ) {
+		    // A pair of measurement nodes are already specified. Display tracetree.
+		    tracetree_os(server, from, to, start_time, end_time);
+		    // $('#page-title').hide();
+		}
 	    }
-	} );
+	}
 	if (traceroutes_found ) {
 	    peer_table += "</tbody></table>";
 	} else {
@@ -299,21 +266,19 @@ function fetch_base_os(url, start_time, end_time){
 //		$( "#datepicker" ).change( function(){
 		$( "#datepicker_from" ).datepicker( { defaultDate: new Date(start_time*1000), changeMonth: true, numberOfMonth: 1 });
 		$( "#datepicker_from" ).change( function(){
-		    fetch_base(url, new Date($(this).val()) / 1000, new Date($("#datepicker_to").val()) / 1000 ); } );
+		    fetch_base_os(mahost, new Date($(this).val()) / 1000, new Date($("#datepicker_to").val()) / 1000 ); } );
 		$( "#datepicker_to" ).datepicker( { defaultDate: new Date(end_time*1000), changeMonth: true, numberOfMonth: 1 });
 		$( "#datepicker_to" ).change( function(){
-		    fetch_base(url, new Date($("#datepicker_from").val()) / 1000, new Date($(this).val()) / 1000); } );
+		    fetch_base_os(mahost, new Date($("#datepicker_from").val()) / 1000, new Date($(this).val()) / 1000); } );
 		if (traceroutes_found) sorttable.makeSortable(document.getElementById("peer_table"));
 	    });
 	//makeSortable( document.getElementById("peer_table"));
     } )
 	.fail(function( jqxhr, textStatus, error) {
-	    msg= "Failed to get "+ url + "\n\n(Error message:\n" + textStatus + ", " + error + ")";
+	    msg= "Failed to get "+ fetch_url + "\n\n(Error message:\n" + textStatus + ", " + error + ")";
 	    console.log("##3 " + msg);
 	    alert(msg);
     });   
-*/
-
 }
 
 
@@ -342,6 +307,33 @@ function tracetree( srv, mno){
     document.getElementById('itrace').src = url;
     $('#tabs').tabs({'active': 2});
 
+    
+}
+
+function tracetree_os(server, from, to, start_time, end_time){
+    //tracetree_os( srv, mno){
+      
+    var url='tracetree.html?mahost=' + server;
+    url+="&from=" + from;
+    url+="&to=" + to;
+    url+="&start=" + start_time;
+    url+="&end=" + end_time;
+    if ( urlParams["stime"] ) {
+	url+="&stime=" + urlParams["stime"];
+    }
+    if ('verify_SSL' in urlParams){
+	url = url + "&verify_SSL=" + urlParams['verify_SSL'];
+    }
+    if ('api' in urlParams){
+	url = url + "&api=" + urlParams['api'];
+    }
+
+    console.log( 'ls::tracetree ' + url );
+
+    $('#trace').html(
+	'<iframe id="itrace" width=100% height=1000 src="about:blank" frameborder="0" scrolling="yes"></iframe>');
+    document.getElementById('itrace').src = url;
+    $('#tabs').tabs({'active': 2});
     
 }
 

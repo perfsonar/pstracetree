@@ -51,8 +51,16 @@ my $mahost = "https://localhost";
 $mahost = $cgi->param( "mahost" ) if ( defined $cgi->param( "mahost" ) );
 my $iso_start = strftime("%Y-%m-%dT00:00:00%z", localtime);  # ISO formatted beginning of today in current timezone
 $iso_start = $cgi->param("start") if (defined $cgi->param("start"));
+if ( ! ($iso_start =~ /\D/) ) {
+    # Not ISO but likely epoch time. Convert.
+    $iso_start = strftime("%Y-%m-%dT00:00:00%z", localtime($cgi->param("start")));
+}
 my $iso_end = strftime("%Y-%m-%dT23:59:59%z", localtime);    # ISO formatted end of today in current timezone
 $iso_end = $cgi->param("end") if (defined $cgi->param("end"));
+if ( ! ($iso_end =~ /\D/) ) {
+    # Not ISO but likely epoch time. Convert.
+    $iso_end = strftime("%Y-%m-%dT00:00:00%z", localtime($cgi->param("end")));
+}
 my $from='';
 $from = $cgi->param("from") if (defined $cgi->param("from"));
 my $to='';
@@ -64,22 +72,28 @@ $verify_SSL = $cgi->param("verify_SSL") if (defined $cgi->param("verify_SSL"));
 my $query='';
 if (! $from || ! $to ) {
     # Search for all peers with trace test results available
-    $query = '{ "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, { "range": { "@date": { "gte": "' . $iso_start . '", "lt": "' . $iso_end . '" } } } ] } },
-				      "size": 0,
-				      "aggs": { "peer": { "terms": { "field": "from_to.keyword", "size" : 1000000  } } }
-				    }';
+    $query = '{ "query": { "bool": { "filter": [ { "term": { "test.type.keyword": "trace" } }, 
+                                                 { "range": { "@timestamp": { "gte": "' . $iso_start . '", "lt": "' . $iso_end . '" } } } ] } },
+		"size": 0,
+  	        "aggs": { "peers": { "multi_terms": { "terms": [ { "field": "test.spec.source.keyword"}, 
+                                                                { "field": "test.spec.dest.keyword"} ],
+                                                     "size" : 1000000  },
+                                    "aggs": { "timestamp": { "max": { "field": "@timestamp" } } }
+
+                                   } } }'; # size = <large-number> to ensure all peers found are returned
 } else {
     # Search for trace test results (traceroutes) in time range between given hosts 
-    $query = '{ "query": { "bool": { "filter": [ { "term": { "test.type": "trace" } }, 
-                                                 { "term": { "test.spec.source": "' . $from . '" } },
-                                                 { "term": { "test.spec.dest": "' . $to . '" } },
-                                                 { "range": { "@date": { "gte": "' . $iso_start . '", "lt": "' . $iso_end . '" } } } ] } },
-				      "size": 8640,
-				      "aggs": { "peer": { "terms": { "field": "from_to.keyword", "size" : 1000000  } } }
-				    }';   # size = 8640 => fetch everything for 10s sampling periode over 24 hours
+   $query = '{ "query": { "bool": { "filter": [ { "term": { "test.type.keyword": "trace" } }, 
+                                                { "term": { "test.spec.source.keyword": "' . $from . '" } },
+                                                { "term": { "test.spec.dest.keyword": "' . $to . '" } },
+                                                { "range": { "@timestamp": { "gte": "' . $iso_start . '", "lt": "' . $iso_end . '" } } } 
+                                              ] 
+                                   } 
+                         },
+	       "size": 8640  }';   # size = 8640 => fetch everything for 10s sampling periode over 24 hours
 }
 
-print $query,"\n";
+print $query,"\n" if (defined $cgi->param('debug'));
 
 # Run query
 my $http_session = HTTP::Tiny->new( 'verify_SSL' =>  $verify_SSL );
