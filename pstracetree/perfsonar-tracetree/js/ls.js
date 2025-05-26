@@ -5,13 +5,16 @@ It uses terminology like MA and LS from there
  analyze a traceroute and present graphs and tables
  
  https://docs.perfsonar.net/esmond_api_rest.html
+
+ Changelog:
+    2025-05: Support for accessing Opensearch api directly is added <otto.wittner@sikt.no>
 */
 
 function fetch_ls(ls, start_time){
+    // Find persfsonars lookup service host(s)
+    
     ma_list=[];
     var url= ls + '&type=service&service-type=ma"';
-    //$.getJSON( url, function( loc){
-    // $.getJSON( 'cors.pl?method=GET&url=' + encodeURI(url), function( loc){
 
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
@@ -20,6 +23,7 @@ function fetch_ls(ls, start_time){
     
     $.getJSON( 'cors.pl?' + verify_SSL + 'method=GET&url=' + url, function( loc){
 	$.each(loc.hosts, function(index, host){
+	    // LS service host found. Build list of measurement archives.
 	    fetch_ma(host.locator,start_time);
 	} );
     } )
@@ -33,11 +37,12 @@ function fetch_ls(ls, start_time){
 	    } else {
 		$("#ma").html("<h2 style=text-align:center> No list of MAs available.</h2><p style=text-align:center>Add 'mahost=&lt;hostname/ip-address&gt;' to specify a MA host.<br/>Add 'verify_SSL=0' to disable SSL cerificate checks.</p>");
 	    }
-	//fetch_ma('https://34.123.110.14:8090/lookup/records', start_time);
     } ); 
 }
 
 function fetch_ma(loc, start_time){
+    // Create table of public measurement arcives
+    
     var url=  loc + '&type=service&service-type=ma' ;
     var re=/\d[\d\.:]+\d/;  // extract address
  
@@ -45,8 +50,6 @@ function fetch_ma(loc, start_time){
     var head='<input type="text" id="ma_in" onkeyup="search_table_ma()" placeholder="Search table..">';
     head+='<table id="ma_table" class=sortable border=1><thead title="Sortable"><tr><th>Service<th>Location<th>Country<th>URls</thead><tbody>';
     var tail='</tbody></table>';
-    // var cors='cors.pl?method=GET&url=' + encodeURI(url);
-
 
     var verify_SSL="";
     if ('verify_SSL' in urlParams){
@@ -56,7 +59,6 @@ function fetch_ma(loc, start_time){
     var cors='cors.pl?' + verify_SSL + 'method=GET&url=' + url;
 
     $.getJSON( cors, function( mas){
-    // $.getJSON( url, function( mas){
 	var rows=[];
 	$.each(mas, function(index, ma){
 	    if ( ma["psservice-eventtypes"].indexOf( "packet-trace") >= 0 ){
@@ -283,7 +285,7 @@ function fetch_base_os(mahost, start_time, end_time){
 
 
 function tracetree( srv, mno){
-    //var srv=urlParams['ma'].split("/").slice(0,3).join("/");
+    // Initiate building of traceroute topology and tables applying Esmond api
       
     var base =  srv + measurements[ mno ]['base-uri'];
     var url='tracetree.html?mahost=' + base;
@@ -296,23 +298,18 @@ function tracetree( srv, mno){
 	url = url + "&verify_SSL=" + urlParams['verify_SSL'];
     }
 
-    //url = 'cors.pl?method=GET&url=' + encodeURI(url);
-
     console.log( 'ls::tracetree ' + url );
-
     
     //window.open( url, '_blank') ;
     $('#trace').html(
 	'<iframe id="itrace" width=100% height=1000 src="about:blank" frameborder="0" scrolling="yes"></iframe>');
     document.getElementById('itrace').src = url;
     $('#tabs').tabs({'active': 2});
-
-    
 }
 
 function tracetree_os(server, from, to, start_time, end_time){
-    //tracetree_os( srv, mno){
-      
+    // Initiate building of traceroute topology and tables with support for Opensearch api
+    
     var url='tracetree.html?mahost=' + server;
     url+="&from=" + from;
     url+="&to=" + to;
@@ -353,6 +350,7 @@ $(document).ready( function(){
 
     var parm='';
 
+    // Parse key-value part of url and store parameters found in urlParams[]
     while (match = search.exec(query))
 	urlParams[decode(match[1])] = decode(match[2]);
 
@@ -374,25 +372,27 @@ $(document).ready( function(){
     }
 	
     if ( urlParams['mahost']){
+	// Measurement archive specified. List traceroutes available from MA.
+
+	// Add button to open list of public MAs (if specified MA is unavailable)
 	let base= 'https://' +  urlParams['mahost'];
 	var html='<button onclick="';
 	html+="fetch_ls('https://ps-west.es.net/lookup/activehosts.json'," + start_time + ');">';
-//	html+="fetch_base('" + base + "/esmond/perfsonar/archive'" + ');">';
 	html+='Fetch MA list</button>';
 	$("#ma").html(html);
 
-
 	if ( urlParams['api'] === 'opensearch' ) {
-	    // Fetch content applying Opensearch API
+	    // Fetch traceroutes applying Opensearch API
 	    fetch_base_os( base, start_time, end_time);
 	} else {
+	    // Fetch traceroutes applying Esmond API
             fetch_base( base + "/esmond/perfsonar/archive/", start_time, end_time );
 	}
     } else {
+	// Find active lookup service hosts and list public measurement archives
 	fetch_ls('https://ps-west.es.net/lookup/activehosts.json', start_time);
     }
-    // } );
-
+    
 } );
 
 /* function sortTable(table, col, reverse) {
