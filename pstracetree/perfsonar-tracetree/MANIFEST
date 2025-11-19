@@ -1,6 +1,8 @@
 LICENSE
 etc/apache-perfsonar-tracetree.conf
 bin/cors.pl
+bin/geoiplookup.pl
+bin/get-tracetests.pl
 css/ls.css
 css/tracetree.css
 img/time-passing.svg
