@@ -98,7 +98,7 @@ service httpd restart &> /dev/null || :
 %config /etc/httpd/conf.d/%{apacheconf}
 
 %changelog
-* Thu Oct 24 2024 Otto.Wittner@sikt.no
+* Thu Oct 24 2025 Otto.Wittner@sikt.no
 - Preparing for 5.3 release
 * Thu Feb 15 2024 Otto.Wittner@sikt.no
 - Restructuring and misc cleaning
