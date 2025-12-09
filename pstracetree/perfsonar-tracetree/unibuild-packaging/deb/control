@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: perfSONAR developers <debian@perfsonar.net>
 Uploaders: Otto J Wittner <otto.wittner@sikt.no>
 Build-Depends: debhelper (>= 10),
- perl (>= 5.32)
+ perl
 Standards-Version: 4.7.0.0
 Homepage: http://www.perfsonar.net
 Vcs-Git: https://github.com/perfsonar/pstracetree.git
@@ -14,7 +14,7 @@ Package: perfsonar-tracetree
 Architecture: all
 Depends: ${misc:Depends}, ${perl:Depends},
  apache2,
- perl (>= 5.32),
+ perl,
  libcgi-pm-perl, 
  libconfig-general-perl,
  liblog-log4perl-perl,
