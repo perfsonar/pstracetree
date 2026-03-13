@@ -324,6 +324,9 @@ function tracetree_os(server, from, to, start_time, end_time){
     if ('api' in urlParams){
 	url = url + "&api=" + urlParams['api'];
     }
+    if ('ip-version' in urlParams){
+	url = url + "&ip-version=" + urlParams['ip-version'];
+    }
 
     console.log( 'ls::tracetree ' + url );
 
