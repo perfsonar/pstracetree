@@ -249,7 +249,7 @@ function fetch_base_os(mahost, start_time, end_time){
 		pairs[pair] = true;
 		traceroutes_found = true;
 		
-		if (urlParams["from"] == from && urlParams["to"] == to ) {
+		if ( ( urlParams["from"] == from || urlParams["from_adr"] == from ) && ( urlParams["to"] == to || urlParams["to_adr"] == to ) ) {
 		    // A pair of measurement nodes are already specified. Display tracetree.
 		    tracetree_os(server, from, to, start_time, end_time);
 		    // $('#page-title').hide();
