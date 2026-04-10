@@ -1,17 +1,44 @@
 #
-# Makefile for Any Package
+# Makefile for unibuild top-level directory
 #
 
-include $(wildcard unibuild/unibuild.make)
+default: build
 
-default:
-	@echo "See README.md for instructions."
 
-system-test:
-	@echo "Prepareing system test of PS Tracetreep..."
-	docker compose -f pstracetree/tests/system-test.yml --project-directory . build
-	@echo "*********************************************************************"
-	@echo "* Visit https://your.host:4435/pstracetree to test running instance *"
-	@echo "*********************************************************************"
-	docker compose -f pstracetree/tests/system-test.yml --project-directory . up 
-	@echo "System test completed."
+BUILD_LOG=unibuild-log
+UNIBUILD_REPO=unibuild-repo
+
+ifdef START
+UNIBUILD_OPTS += --start $(START)
+endif
+ifdef STOP
+UNIBUILD_OPTS += --stop $(STOP)
+endif
+ifdef RELEASE
+UNIBUILD_OPTS += --release
+endif
+
+# The shell command below does the equivalent of BASH's pipefail
+# within the confines of POSIX.
+# Source: https://unix.stackexchange.com/a/70675/15184
+build:
+	rm -rf $(BUILD_LOG) $(UNIBUILD_REPO)
+	((( \
+	(unibuild build $(UNIBUILD_OPTS); echo $$? >&3) \
+	| tee $(BUILD_LOG) >&4) 3>&1) \
+	| (read XS; exit $$XS) \
+	) 4>&1
+TO_CLEAN += $(BUILD_LOG)
+
+
+uninstall:
+	unibuild make --reverse $@
+
+fresh: uninstall build
+
+clean:
+	unibuild make $(UNIBUILD_OPTS) clean
+	unibuild clean
+	$(MAKE) -C docs $@
+	rm -rf $(TO_CLEAN)
+	find . -name '*~' | xargs rm -f
