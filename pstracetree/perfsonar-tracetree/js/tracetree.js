@@ -1758,6 +1758,11 @@ $(document).ready( function(){
 	while (match = search.exec(query))
 	    urlParams[decode(match[1])] = decode(match[2]);
 
+	if (typeof urlParams['ip-version'] !== "number") {
+	    // Ensure ip-version is numeric
+	    urlParams['ip-version'] = parseInt(urlParams['ip-version']);
+	}
+	
 	var tracepeers='';
 	if (urlParams['from'])
 	    tracepeers += ' from ' + urlParams['from'];
