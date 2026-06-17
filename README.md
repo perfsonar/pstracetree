@@ -1,3 +1,6 @@
+# THIS REPO HAS BEEN ARCHIVED
+## Its contents are now maintained in the [microdep repo](https://github.com/perfsonar/microdep)
+
 # perfSONAR Tracetree
 
 perfSONAR Tracetree (PStracetree) is a visualization tool for traceroute measurements.
